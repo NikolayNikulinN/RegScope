@@ -1,0 +1,68 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Name="RegScope"
+      Manufacturer="RegScope"
+      Version="1.0.0.0"
+      UpgradeCode="FE874A48-D417-44A7-B90A-1B8AC58810E6"
+      Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of RegScope is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(var.ProjectDir)..\..\RegScope\Images\appIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="RegScope">
+        <Component Id="ApplicationFiles" Guid="53886E5D-38A8-4F44-8383-9397118D7398">
+          <File Id="RegScopeExe" Source="$(var.RegScopePayloadDir)RegScope.exe" KeyPath="yes" />
+          <File Id="RegScopeDll" Source="$(var.RegScopePayloadDir)RegScope.dll" />
+          <File Id="RegScopeApplicationDll" Source="$(var.RegScopePayloadDir)RegScope.Application.dll" />
+          <File Id="RegScopeDomainDll" Source="$(var.RegScopePayloadDir)RegScope.Domain.dll" />
+          <File Id="RegScopeInfrastructureDll" Source="$(var.RegScopePayloadDir)RegScope.Infrastructure.dll" />
+          <File Id="RegScopeDeps" Source="$(var.RegScopePayloadDir)RegScope.deps.json" />
+          <File Id="RegScopeRuntimeConfig" Source="$(var.RegScopePayloadDir)RegScope.runtimeconfig.json" />
+          <File Id="CommunityToolkitMvvmDll" Source="$(var.RegScopePayloadDir)CommunityToolkit.Mvvm.dll" />
+          <File Id="MicrosoftExtensionsDependencyInjectionDll" Source="$(var.RegScopePayloadDir)Microsoft.Extensions.DependencyInjection.dll" />
+          <File Id="MicrosoftExtensionsDependencyInjectionAbstractionsDll" Source="$(var.RegScopePayloadDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+          <File Id="SerilogDll" Source="$(var.RegScopePayloadDir)Serilog.dll" />
+          <File Id="SerilogSinksFileDll" Source="$(var.RegScopePayloadDir)Serilog.Sinks.File.dll" />
+          <File Id="WpfUiDll" Source="$(var.RegScopePayloadDir)Wpf.Ui.dll" />
+          <File Id="WpfUiAbstractionsDll" Source="$(var.RegScopePayloadDir)Wpf.Ui.Abstractions.dll" />
+        </Component>
+        <Component Id="ApplicationShortcuts" Guid="221DFA33-3265-4B69-B41D-F204DBB95558">
+          <Shortcut Id="DesktopShortcut"
+                    Directory="DesktopFolder"
+                    Name="RegScope"
+                    Target="[INSTALLFOLDER]RegScope.exe"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="AppIcon.ico" />
+          <Shortcut Id="StartMenuShortcut"
+                    Directory="ApplicationProgramsFolder"
+                    Name="RegScope"
+                    Target="[INSTALLFOLDER]RegScope.exe"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="AppIcon.ico" />
+          <RegistryValue Root="HKCU" Key="Software\RegScope" Name="shortcuts" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="RegScope">
+        <Component Id="StartMenuFolderCleanup" Guid="D5829CD7-8B73-4510-BE2A-9C0286C3AF04">
+          <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+          <RegistryValue Root="HKCU" Key="Software\RegScope" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="RegScope" Level="1">
+      <ComponentRef Id="ApplicationFiles" />
+      <ComponentRef Id="ApplicationShortcuts" />
+      <ComponentRef Id="StartMenuFolderCleanup" />
+    </Feature>
+  </Package>
+</Wix>

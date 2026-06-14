@@ -1,0 +1,28 @@
+<Project Sdk="WixToolset.Sdk/6.0.2">
+  <PropertyGroup>
+    <OutputName>RegScope</OutputName>
+    <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputPath>bin\</OutputPath>
+    <OutDir>$(MSBuildProjectDirectory)\bin\</OutDir>
+    <SuppressValidation>true</SuppressValidation>
+    <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\</RegScopePayloadDir>
+    <DefineConstants>RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <Target Name="BuildRegScopePayload" BeforeTargets="CoreCompile">
+    <MSBuild
+        Projects="..\..\RegScope\RegScope.csproj"
+        Targets="Build"
+        Properties="Configuration=$(Configuration);Platform=$(Platform);OutDir=$(RegScopePayloadDir)" />
+  </Target>
+
+  <Target Name="CopyMsiToInstallerBin" AfterTargets="Build" Condition="Exists('$(TargetPath)')">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\" />
+    <Copy
+        SourceFiles="$(TargetPath)"
+        DestinationFiles="$(MSBuildProjectDirectory)\bin\$(TargetFileName)"
+        SkipUnchangedFiles="false"
+        OverwriteReadOnlyFiles="true" />
+  </Target>
+</Project>

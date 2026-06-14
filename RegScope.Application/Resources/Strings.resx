@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AccessDeniedDeleteError" xml:space="preserve"><value>Access was denied. Run RegScope as administrator and make sure your account has permission to change this registry item.</value></data>
+  <data name="AccessDeniedError" xml:space="preserve"><value>Access denied.</value></data>
+  <data name="AppTitle" xml:space="preserve"><value>RegScope</value></data>
+  <data name="CanDeleteKeyColumn" xml:space="preserve"><value>CanDeleteKey</value></data>
+  <data name="CannotDeleteRootKeyError" xml:space="preserve"><value>Root registry hives cannot be deleted.</value></data>
+  <data name="ConfirmDeleteKeyMessageFormat" xml:space="preserve"><value>Delete this registry key and all subkeys?&#x0D;&#x0A;&#x0D;&#x0A;{0}</value></data>
+  <data name="ConfirmDeleteSelectedMessageFormat" xml:space="preserve"><value>Delete selected registry items? Count: {0}. Registry key matches will delete the whole key with all subkeys.</value></data>
+  <data name="ConfirmDeleteSelectionListMessage" xml:space="preserve"><value>The following registry items will be deleted. Selected folders delete the registry key with all subkeys. Selected child values or subkeys delete only that child item.&#x0D;&#x0A;&#x0D;&#x0A;{0}&#x0D;&#x0A;&#x0D;&#x0A;Continue?</value></data>
+  <data name="ConfirmDeleteValueMessageFormat" xml:space="preserve"><value>Delete registry value "{0}" from:&#x0D;&#x0A;&#x0D;&#x0A;{1}</value></data>
+  <data name="CopyPathMenuItem" xml:space="preserve"><value>Copy Path</value></data>
+  <data name="DeleteCompletedStatusFormat" xml:space="preserve"><value>Deleted {0} of {1} item(s).</value></data>
+  <data name="DeleteFailedMessageFormat" xml:space="preserve"><value>{0} item(s) could not be deleted. See the ErrorMessage column for details.</value></data>
+  <data name="DeleteKeyMenuItem" xml:space="preserve"><value>Delete Key</value></data>
+  <data name="DeleteListMoreItemsFormat" xml:space="preserve"><value>... and {0} more item(s)</value></data>
+  <data name="DeleteRegistryKeyListItemFormat" xml:space="preserve"><value>Key: {0}</value></data>
+  <data name="DeleteRegistryValueListItemFormat" xml:space="preserve"><value>Value: {0}\{1}</value></data>
+  <data name="DeleteSelectedButton" xml:space="preserve"><value>Delete Selected</value></data>
+  <data name="DeleteValueMenuItem" xml:space="preserve"><value>Delete Value</value></data>
+  <data name="ErrorMessageColumn" xml:space="preserve"><value>ErrorMessage</value></data>
+  <data name="FullPathColumn" xml:space="preserve"><value>FullPath</value></data>
+  <data name="HiveColumn" xml:space="preserve"><value>Hive</value></data>
+  <data name="MatchTypeColumn" xml:space="preserve"><value>MatchType</value></data>
+  <data name="PathCopiedStatus" xml:space="preserve"><value>Path copied to clipboard.</value></data>
+  <data name="ReadyStatus" xml:space="preserve"><value>Ready.</value></data>
+  <data name="RegistryIoError" xml:space="preserve"><value>The registry item could not be read or changed because Windows returned an I/O error.</value></data>
+  <data name="RegistryKeyNotFoundError" xml:space="preserve"><value>The registry key was not found.</value></data>
+  <data name="RegistryValueNotSelectedError" xml:space="preserve"><value>Select a registry value result first.</value></data>
+  <data name="ResultCountFormat" xml:space="preserve"><value>{0} result(s)</value></data>
+  <data name="SearchButton" xml:space="preserve"><value>Search</value></data>
+  <data name="SearchCompletedStatusFormat" xml:space="preserve"><value>Search completed. Found {0} result(s).</value></data>
+  <data name="SearchFailedMessage" xml:space="preserve"><value>The search failed unexpectedly. Check the log file for details.</value></data>
+  <data name="SearchFailedStatus" xml:space="preserve"><value>Search failed.</value></data>
+  <data name="SearchingStatus" xml:space="preserve"><value>Searching registry...</value></data>
+  <data name="SearchStoppedStatusFormat" xml:space="preserve"><value>Search stopped. Found {0} result(s).</value></data>
+  <data name="StopButton" xml:space="preserve"><value>Stop</value></data>
+  <data name="StoppingStatus" xml:space="preserve"><value>Stopping search...</value></data>
+  <data name="UnhandledErrorMessage" xml:space="preserve"><value>An unexpected error occurred. Check the log file for details.</value></data>
+  <data name="ValueDataColumn" xml:space="preserve"><value>ValueData</value></data>
+  <data name="ValueKindColumn" xml:space="preserve"><value>ValueKind</value></data>
+  <data name="ValueNameColumn" xml:space="preserve"><value>ValueName</value></data>
+</root>

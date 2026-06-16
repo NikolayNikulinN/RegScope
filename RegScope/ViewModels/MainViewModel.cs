@@ -74,24 +74,24 @@ public sealed partial class MainViewModel : ObservableObject
         resultGroupsByKey.Clear();
         IsSearching = true;
         SearchStatus = Resources.Strings.SearchingStatus;
-        Log.Information("Registry search started for text {SearchText} in scope {Scope}.", SearchText, SelectedHiveOption.DisplayName);
+        Log.Information(CommonConstants.LogTemplateRegistrySearchStarted, SearchText, SelectedHiveOption.DisplayName);
 
         try
         {
             var options = new RegistrySearchOptions(SearchText.Trim(), SelectedHiveOption);
             await Task.Run(() => registrySearchService.SearchAsync(options, AddBatchAsync, cancellationToken), cancellationToken);
             SearchStatus = string.Format(Resources.Strings.SearchCompletedStatusFormat, Results.Count);
-            Log.Information("Registry search completed with {ResultCount} results.", Results.Count);
+            Log.Information(CommonConstants.LogTemplateRegistrySearchCompleted, Results.Count);
         }
         catch (OperationCanceledException)
         {
             SearchStatus = string.Format(Resources.Strings.SearchStoppedStatusFormat, Results.Count);
-            Log.Information("Registry search stopped with {ResultCount} results.", Results.Count);
+            Log.Information(CommonConstants.LogTemplateRegistrySearchStopped, Results.Count);
         }
         catch (Exception ex)
         {
             SearchStatus = Resources.Strings.SearchFailedStatus;
-            Log.Error(ex, "Registry search failed.");
+            Log.Error(ex, CommonConstants.LogTemplateRegistrySearchFailed);
             MessageBox.Show(Resources.Strings.SearchFailedMessage, Resources.Strings.AppTitle, MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
@@ -217,7 +217,7 @@ public sealed partial class MainViewModel : ObservableObject
                     operation.Item.RefreshErrorMessage();
                 }
 
-                Log.Warning(ex, "Unable to delete registry item {DisplayText}.", operation.DisplayText);
+                Log.Warning(ex, CommonConstants.LogTemplateUnableToDeleteRegistryItem, operation.DisplayText);
             }
         }
 

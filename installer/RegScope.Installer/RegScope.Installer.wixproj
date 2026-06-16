@@ -5,8 +5,10 @@
     <InstallerPlatform>x64</InstallerPlatform>
     <OutputPath>bin\</OutputPath>
     <OutDir>$(MSBuildProjectDirectory)\bin\</OutDir>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <SuppressValidation>true</SuppressValidation>
     <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\</RegScopePayloadDir>
+    <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(Configuration)\</RegScopePayloadIntermediateDir>
     <DefineConstants>RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
@@ -14,15 +16,7 @@
     <MSBuild
         Projects="..\..\RegScope\RegScope.csproj"
         Targets="Build"
-        Properties="Configuration=$(Configuration);Platform=$(Platform);OutDir=$(RegScopePayloadDir)" />
+        Properties="Configuration=$(Configuration);Platform=$(Platform);OutDir=$(RegScopePayloadDir);IntermediateOutputPath=$(RegScopePayloadIntermediateDir)" />
   </Target>
 
-  <Target Name="CopyMsiToInstallerBin" AfterTargets="Build" Condition="Exists('$(TargetPath)')">
-    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\" />
-    <Copy
-        SourceFiles="$(TargetPath)"
-        DestinationFiles="$(MSBuildProjectDirectory)\bin\$(TargetFileName)"
-        SkipUnchangedFiles="false"
-        OverwriteReadOnlyFiles="true" />
-  </Target>
 </Project>

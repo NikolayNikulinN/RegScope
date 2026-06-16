@@ -21,7 +21,7 @@ public partial class App : Application
 
         DispatcherUnhandledException += (_, args) =>
         {
-            Log.Fatal(args.Exception, "Unhandled UI exception.");
+            Log.Fatal(args.Exception, CommonConstants.LogTemplateUnhandledUiException);
             MessageBox.Show(
                 global::RegScope.Resources.Strings.UnhandledErrorMessage,
                 global::RegScope.Resources.Strings.AppTitle,
@@ -31,9 +31,9 @@ public partial class App : Application
         };
 
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-            Log.Fatal(args.ExceptionObject as Exception, "Unhandled application exception.");
+            Log.Fatal(args.ExceptionObject as Exception, CommonConstants.LogTemplateUnhandledApplicationException);
 
-        Log.Information("RegScope started.");
+        Log.Information(CommonConstants.LogTemplateApplicationStarted);
         MainWindow = serviceProvider.GetRequiredService<MainWindow>();
         MainWindow.Show();
 
@@ -42,7 +42,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        Log.Information("RegScope exited with code {ExitCode}.", e.ApplicationExitCode);
+        Log.Information(CommonConstants.LogTemplateApplicationExited, e.ApplicationExitCode);
         serviceProvider?.Dispose();
         Log.CloseAndFlush();
         base.OnExit(e);

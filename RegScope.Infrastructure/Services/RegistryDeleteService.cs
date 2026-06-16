@@ -1,5 +1,5 @@
-using System.IO;
 using Microsoft.Win32;
+using RegScope.Constants;
 using RegScope.Models;
 using Serilog;
 
@@ -45,7 +45,7 @@ public sealed class RegistryDeleteService : IRegistryDeleteService
         }
 
         parentKey.DeleteSubKeyTree(keyName, throwOnMissingSubKey: false);
-        Log.Information("Deleted registry key {Hive}\\{Path} in view {View}.", request.HiveKey, request.SubKeyPath, request.RegistryView);
+        Log.Information(CommonConstants.LogTemplateDeletedRegistryKey, request.HiveKey, request.SubKeyPath, request.RegistryView);
     }
 
     private static void DeleteValue(RegistryDeleteRequest request)
@@ -63,8 +63,8 @@ public sealed class RegistryDeleteService : IRegistryDeleteService
             throw new IOException(Resources.Strings.RegistryKeyNotFoundError);
         }
 
-        var valueName = request.ValueName == Constants.CommonConstants.DefaultValueName ? string.Empty : request.ValueName;
+        var valueName = request.ValueName == CommonConstants.DefaultValueName ? string.Empty : request.ValueName;
         key.DeleteValue(valueName, throwOnMissingValue: false);
-        Log.Information("Deleted registry value {ValueName} from {Hive}\\{Path} in view {View}.", request.ValueName, request.HiveKey, request.SubKeyPath, request.RegistryView);
+        Log.Information(CommonConstants.LogTemplateDeletedRegistryValue, request.ValueName, request.HiveKey, request.SubKeyPath, request.RegistryView);
     }
 }

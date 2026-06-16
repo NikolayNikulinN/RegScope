@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Images\appIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Description>RegScope is a Windows desktop tool for searching and removing registry keys and values across selected registry hives.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,10 @@
     <ProjectReference Include="..\RegScope.Application\RegScope.Application.csproj" />
     <ProjectReference Include="..\RegScope.Domain\RegScope.Domain.csproj" />
     <ProjectReference Include="..\RegScope.Infrastructure\RegScope.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Docs\images\" />
   </ItemGroup>
 
 </Project>

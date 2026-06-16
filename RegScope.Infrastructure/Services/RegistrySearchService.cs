@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Globalization;
-using System.IO;
-using System.Security;
 using Microsoft.Win32;
 using RegScope.Constants;
 using RegScope.Models;
 using Serilog;
+using System.Collections;
+using System.Globalization;
+using System.Security;
 
 namespace RegScope.Services;
 
@@ -72,7 +71,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, "Unable to open registry hive {Hive} in view {View}.", hiveOption.DisplayName, view);
+            Log.Warning(ex, CommonConstants.LogTemplateUnableToOpenRegistryHive, hiveOption.DisplayName, view);
             batch.Add(CreateErrorResult(hiveOption.DisplayName, hiveOption.DisplayName, string.Empty, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
         }
@@ -116,7 +115,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, "Unable to enumerate subkeys for {FullPath}.", fullPath);
+            Log.Warning(ex, CommonConstants.LogTemplateUnableToEnumerateRegistrySubKeys, fullPath);
             batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             return;
@@ -136,7 +135,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
             }
             catch (Exception ex) when (IsExpectedRegistryException(ex))
             {
-                Log.Warning(ex, "Unable to open registry key {FullPath}.", childFullPath);
+                Log.Warning(ex, CommonConstants.LogTemplateUnableToOpenRegistryKey, childFullPath);
                 batch.Add(CreateErrorResult(hiveName, childFullPath, childSubKeyPath, hive, view, ex));
                 await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             }
@@ -172,7 +171,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, "Unable to enumerate values for {FullPath}.", fullPath);
+            Log.Warning(ex, CommonConstants.LogTemplateUnableToEnumerateRegistryValues, fullPath);
             batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             return;
@@ -203,7 +202,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
             }
             catch (Exception ex) when (IsExpectedRegistryException(ex))
             {
-                Log.Warning(ex, "Unable to read registry value {ValueName} in {FullPath}.", valueName, fullPath);
+                Log.Warning(ex, CommonConstants.LogTemplateUnableToReadRegistryValue, valueName, fullPath);
                 batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
                 await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             }

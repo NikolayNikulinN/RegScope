@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="DurationOverlayBrush" Color="#CC111111" />
+    <SolidColorBrush x:Key="DurationOverlayTextBrush" Color="White" />
+    <SolidColorBrush x:Key="MediaListPanelBackgroundBrush" Color="#FAFFFFFF" />
+    <SolidColorBrush x:Key="DeleteButtonIconBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="SoftDeleteButtonBackgroundBrush" Color="#12C42B1C" />
+    <SolidColorBrush x:Key="SoftDeleteButtonBorderBrush" Color="#55C42B1C" />
+    <SolidColorBrush x:Key="SoftDeleteButtonForegroundBrush" Color="#A4262C" />
+    <SolidColorBrush x:Key="SoftDeleteButtonHoverBackgroundBrush" Color="#22C42B1C" />
+</ResourceDictionary>

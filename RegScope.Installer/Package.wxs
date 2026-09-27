@@ -9,7 +9,7 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of RegScope is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
-    <Icon Id="AppIcon.ico" SourceFile="$(var.ProjectDir)..\..\RegScope\Images\appIcon.ico" />
+    <Icon Id="AppIcon.ico" SourceFile="$(var.ProjectDir)..\RegScope\appIcon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
 
     <StandardDirectory Id="ProgramFiles64Folder">
@@ -17,9 +17,9 @@
         <Component Id="ApplicationFiles" Guid="53886E5D-38A8-4F44-8383-9397118D7398">
           <File Id="RegScopeExe" Source="$(var.RegScopePayloadDir)RegScope.exe" KeyPath="yes" />
           <File Id="RegScopeDll" Source="$(var.RegScopePayloadDir)RegScope.dll" />
-          <File Id="RegScopeApplicationDll" Source="$(var.RegScopePayloadDir)RegScope.Application.dll" />
-          <File Id="RegScopeDomainDll" Source="$(var.RegScopePayloadDir)RegScope.Domain.dll" />
-          <File Id="RegScopeInfrastructureDll" Source="$(var.RegScopePayloadDir)RegScope.Infrastructure.dll" />
+          <File Id="RegScopeServicesDll" Source="$(var.RegScopePayloadDir)RegScope.Services.dll" />
+          <File Id="RegScopeLoggerDll" Source="$(var.RegScopePayloadDir)RegScope.Logger.dll" />
+          <File Id="RegScopePresentationDll" Source="$(var.RegScopePayloadDir)RegScope.Presentation.dll" />
           <File Id="RegScopeDeps" Source="$(var.RegScopePayloadDir)RegScope.deps.json" />
           <File Id="RegScopeRuntimeConfig" Source="$(var.RegScopePayloadDir)RegScope.runtimeconfig.json" />
           <File Id="CommunityToolkitMvvmDll" Source="$(var.RegScopePayloadDir)CommunityToolkit.Mvvm.dll" />

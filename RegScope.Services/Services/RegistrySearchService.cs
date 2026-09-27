@@ -1,15 +1,28 @@
 using Microsoft.Win32;
-using RegScope.Constants;
+using RegScope.Logger.Constants;
 using RegScope.Models;
-using Serilog;
+using RegScope.Services.Constants;
+using RegScope.Logger.Abstract;
+using RegScope.Logger.Enums;
+using RegScope.Presentation.Abstract;
 using System.Collections;
 using System.Globalization;
 using System.Security;
 
 namespace RegScope.Services;
 
+/// <summary>Provides registry operations through injected logging and resources.</summary>
 public sealed class RegistrySearchService : IRegistrySearchService
 {
+    private readonly ILoggerWrapper logger;
+    private readonly IResourceWrapper resourceWrapper;
+
+    public RegistrySearchService(ILoggerWrapper logger, IResourceWrapper resourceWrapper)
+    {
+        this.logger = logger;
+        this.resourceWrapper = resourceWrapper;
+    }
+
     public async Task SearchAsync(
         RegistrySearchOptions options,
         Func<IReadOnlyList<RegistrySearchResult>, CancellationToken, Task> onBatchFound,
@@ -17,7 +30,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(options.SearchText);
 
-        var batch = new List<RegistrySearchResult>(CommonConstants.SearchBatchSize);
+        var batch = new List<RegistrySearchResult>(ServiceConstants.SearchBatchSize);
         RegistryView[] views = Environment.Is64BitOperatingSystem
             ? [RegistryView.Registry64, RegistryView.Registry32]
             : [RegistryView.Default];
@@ -45,13 +58,13 @@ public sealed class RegistrySearchService : IRegistrySearchService
             yield break;
         }
 
-        foreach (var hive in CommonConstants.HiveOptions.Where(option => !option.IsAllRegistry))
+        foreach (var hive in ServiceConstants.HiveOptions.Where(option => !option.IsAllRegistry))
         {
             yield return new RegistryHiveOption(hive.DisplayName, hive.Hive, hive.IsAllRegistry);
         }
     }
 
-    private static async Task SearchHiveAsync(
+    private async Task SearchHiveAsync(
         RegistryHiveOption hiveOption,
         RegistryView view,
         string searchText,
@@ -71,13 +84,13 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, CommonConstants.LogTemplateUnableToOpenRegistryHive, hiveOption.DisplayName, view);
+            logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToOpenRegistryHive, hiveOption.DisplayName, view);
             batch.Add(CreateErrorResult(hiveOption.DisplayName, hiveOption.DisplayName, string.Empty, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
         }
     }
 
-    private static async Task SearchKeyAsync(
+    private async Task SearchKeyAsync(
         RegistryKey key,
         string hiveName,
         string fullPath,
@@ -115,7 +128,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, CommonConstants.LogTemplateUnableToEnumerateRegistrySubKeys, fullPath);
+            logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToEnumerateRegistrySubKeys, fullPath);
             batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             return;
@@ -135,7 +148,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
             }
             catch (Exception ex) when (IsExpectedRegistryException(ex))
             {
-                Log.Warning(ex, CommonConstants.LogTemplateUnableToOpenRegistryKey, childFullPath);
+                logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToOpenRegistryKey, childFullPath);
                 batch.Add(CreateErrorResult(hiveName, childFullPath, childSubKeyPath, hive, view, ex));
                 await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             }
@@ -152,7 +165,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
     }
 
-    private static async Task SearchValuesAsync(
+    private async Task SearchValuesAsync(
         RegistryKey key,
         string hiveName,
         string fullPath,
@@ -171,7 +184,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         }
         catch (Exception ex) when (IsExpectedRegistryException(ex))
         {
-            Log.Warning(ex, CommonConstants.LogTemplateUnableToEnumerateRegistryValues, fullPath);
+            logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToEnumerateRegistryValues, fullPath);
             batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
             await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             return;
@@ -186,7 +199,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
                 var rawValue = key.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
                 var valueKind = key.GetValueKind(valueName).ToString();
                 var formattedValue = FormatValue(rawValue);
-                var displayName = string.IsNullOrEmpty(valueName) ? CommonConstants.DefaultValueName : valueName;
+                var displayName = string.IsNullOrEmpty(valueName) ? ServiceConstants.DefaultValueName : valueName;
 
                 if (Contains(displayName, searchText))
                 {
@@ -202,7 +215,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
             }
             catch (Exception ex) when (IsExpectedRegistryException(ex))
             {
-                Log.Warning(ex, CommonConstants.LogTemplateUnableToReadRegistryValue, valueName, fullPath);
+                logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToReadRegistryValue, valueName, fullPath);
                 batch.Add(CreateErrorResult(hiveName, fullPath, subKeyPath, hive, view, ex));
                 await FlushIfNeededAsync(batch, onBatchFound, cancellationToken);
             }
@@ -226,7 +239,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
             Hive = hiveName,
             FullPath = fullPath,
             MatchType = matchType,
-            ValueName = string.IsNullOrEmpty(valueName) ? CommonConstants.DefaultValueName : valueName,
+            ValueName = string.IsNullOrEmpty(valueName) ? ServiceConstants.DefaultValueName : valueName,
             ValueKind = valueKind,
             ValueData = Truncate(formattedValue),
             FullValueData = rawValue,
@@ -237,7 +250,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         };
     }
 
-    private static RegistrySearchResult CreateErrorResult(
+    private RegistrySearchResult CreateErrorResult(
         string hiveName,
         string fullPath,
         string subKeyPath,
@@ -278,9 +291,9 @@ public sealed class RegistrySearchService : IRegistrySearchService
 
     private static string Truncate(string value)
     {
-        return value.Length <= CommonConstants.ValueDataDisplayLimit
+        return value.Length <= ServiceConstants.ValueDataDisplayLimit
             ? value
-            : value[..CommonConstants.ValueDataDisplayLimit] + "...";
+            : value[..ServiceConstants.ValueDataDisplayLimit] + "...";
     }
 
     private static string CombineRegistryPath(string left, string right)
@@ -299,7 +312,7 @@ public sealed class RegistrySearchService : IRegistrySearchService
         Func<IReadOnlyList<RegistrySearchResult>, CancellationToken, Task> onBatchFound,
         CancellationToken cancellationToken)
     {
-        if (batch.Count >= CommonConstants.SearchBatchSize)
+        if (batch.Count >= ServiceConstants.SearchBatchSize)
         {
             await FlushBatchAsync(batch, onBatchFound, cancellationToken);
         }
@@ -320,13 +333,13 @@ public sealed class RegistrySearchService : IRegistrySearchService
         return exception is UnauthorizedAccessException or SecurityException or IOException;
     }
 
-    private static string ToUserFriendlyError(Exception exception)
+    private string ToUserFriendlyError(Exception exception)
     {
         return exception switch
         {
-            UnauthorizedAccessException => Resources.Strings.AccessDeniedError,
-            SecurityException => Resources.Strings.AccessDeniedError,
-            IOException => Resources.Strings.RegistryIoError,
+            UnauthorizedAccessException => resourceWrapper.AccessDeniedError,
+            SecurityException => resourceWrapper.AccessDeniedError,
+            IOException => resourceWrapper.RegistryIoError,
             _ => exception.Message
         };
     }

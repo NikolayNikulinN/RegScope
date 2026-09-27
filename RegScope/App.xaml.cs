@@ -1,73 +1,66 @@
-using System;
-using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using RegScope.Constants;
-using RegScope.Services;
-using RegScope.ViewModels;
+using RegScope.Configuration;
+using RegScope.Logger.Abstract;
+using RegScope.Logger.Constants;
+using RegScope.Logger.Enums;
+using RegScope.Presentation.Abstract;
+using RegScope.Presentation.Wrappers;
 using RegScope.Views;
-using Serilog;
 
 namespace RegScope;
 
+/// <summary>Composes application services and manages their lifetime.</summary>
 public partial class App : Application
 {
     private ServiceProvider? serviceProvider;
+    private ILoggerWrapper? logger;
+    private IResourceWrapper? resourceWrapper;
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        ConfigureLogging();
-        serviceProvider = ConfigureServices();
+        serviceProvider = new ServiceCollection().AddRegScope().BuildServiceProvider(
+            new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+        logger = serviceProvider.GetRequiredService<ILoggerWrapper>();
+        resourceWrapper = serviceProvider.GetRequiredService<IResourceWrapper>();
+        Resources[nameof(ResourceWrapper)] = resourceWrapper;
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-        DispatcherUnhandledException += (_, args) =>
-        {
-            Log.Fatal(args.Exception, CommonConstants.LogTemplateUnhandledUiException);
-            MessageBox.Show(
-                global::RegScope.Resources.Strings.UnhandledErrorMessage,
-                global::RegScope.Resources.Strings.AppTitle,
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            args.Handled = true;
-        };
-
-        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-            Log.Fatal(args.ExceptionObject as Exception, CommonConstants.LogTemplateUnhandledApplicationException);
-
-        Log.Information(CommonConstants.LogTemplateApplicationStarted);
+        logger.Write(LogConstants.LogTemplateApplicationStarted);
         MainWindow = serviceProvider.GetRequiredService<MainWindow>();
         MainWindow.Show();
-
         base.OnStartup(e);
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
-        Log.Information(CommonConstants.LogTemplateApplicationExited, e.ApplicationExitCode);
-        serviceProvider?.Dispose();
-        Log.CloseAndFlush();
-        base.OnExit(e);
+        DispatcherUnhandledException -= OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+        try
+        {
+            logger?.Write(LogConstants.LogTemplateApplicationExited, e.ApplicationExitCode);
+            serviceProvider?.Dispose();
+        }
+        finally
+        {
+            logger?.CloseAndFlush();
+            base.OnExit(e);
+        }
     }
 
-    private static ServiceProvider ConfigureServices()
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IRegistrySearchService, RegistrySearchService>();
-        services.AddSingleton<IRegistryDeleteService, RegistryDeleteService>();
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<MainWindow>();
-
-        return services.BuildServiceProvider();
+        logger?.Write(args.Exception, LogLevel.Fatal, LogConstants.LogTemplateUnhandledUiException);
+        MessageBox.Show(resourceWrapper!.UnhandledErrorMessage, resourceWrapper.AppTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+        args.Handled = true;
     }
 
-    private static void ConfigureLogging()
+    private void OnUnhandledException(object sender, UnhandledExceptionEventArgs args)
     {
-        Directory.CreateDirectory(CommonConstants.LogDirectory);
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.File(
-                Path.Combine(CommonConstants.LogDirectory, CommonConstants.LogFileNamePattern),
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: CommonConstants.RetainedLogFileCount)
-            .CreateLogger();
+        logger?.Write(args.ExceptionObject as Exception, LogLevel.Fatal, LogConstants.LogTemplateUnhandledApplicationException);
+        logger?.CloseAndFlush();
     }
 }

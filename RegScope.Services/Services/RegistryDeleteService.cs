@@ -1,12 +1,25 @@
 using Microsoft.Win32;
-using RegScope.Constants;
+using RegScope.Logger.Constants;
 using RegScope.Models;
-using Serilog;
+using RegScope.Services.Constants;
+using RegScope.Logger.Abstract;
+using RegScope.Logger.Enums;
+using RegScope.Presentation.Abstract;
 
 namespace RegScope.Services;
 
+/// <summary>Provides registry operations through injected logging and resources.</summary>
 public sealed class RegistryDeleteService : IRegistryDeleteService
 {
+    private readonly ILoggerWrapper logger;
+    private readonly IResourceWrapper resourceWrapper;
+
+    public RegistryDeleteService(ILoggerWrapper logger, IResourceWrapper resourceWrapper)
+    {
+        this.logger = logger;
+        this.resourceWrapper = resourceWrapper;
+    }
+
     public Task DeleteAsync(RegistryDeleteRequest request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -23,11 +36,11 @@ public sealed class RegistryDeleteService : IRegistryDeleteService
         return Task.CompletedTask;
     }
 
-    private static void DeleteKey(RegistryDeleteRequest request)
+    private void DeleteKey(RegistryDeleteRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.SubKeyPath))
         {
-            throw new InvalidOperationException(Resources.Strings.CannotDeleteRootKeyError);
+            throw new InvalidOperationException(resourceWrapper.CannotDeleteRootKeyError);
         }
 
         var separatorIndex = request.SubKeyPath.LastIndexOf('\\');
@@ -41,18 +54,18 @@ public sealed class RegistryDeleteService : IRegistryDeleteService
 
         if (parentKey is null)
         {
-            throw new IOException(Resources.Strings.RegistryKeyNotFoundError);
+            throw new IOException(resourceWrapper.RegistryKeyNotFoundError);
         }
 
         parentKey.DeleteSubKeyTree(keyName, throwOnMissingSubKey: false);
-        Log.Information(CommonConstants.LogTemplateDeletedRegistryKey, request.HiveKey, request.SubKeyPath, request.RegistryView);
+        logger.Write(LogConstants.LogTemplateDeletedRegistryKey, request.HiveKey, request.SubKeyPath, request.RegistryView);
     }
 
-    private static void DeleteValue(RegistryDeleteRequest request)
+    private void DeleteValue(RegistryDeleteRequest request)
     {
         if (request.ValueName is null)
         {
-            throw new InvalidOperationException(Resources.Strings.RegistryValueNotSelectedError);
+            throw new InvalidOperationException(resourceWrapper.RegistryValueNotSelectedError);
         }
 
         using var baseKey = RegistryKey.OpenBaseKey(request.HiveKey, request.RegistryView);
@@ -60,11 +73,11 @@ public sealed class RegistryDeleteService : IRegistryDeleteService
 
         if (key is null)
         {
-            throw new IOException(Resources.Strings.RegistryKeyNotFoundError);
+            throw new IOException(resourceWrapper.RegistryKeyNotFoundError);
         }
 
-        var valueName = request.ValueName == CommonConstants.DefaultValueName ? string.Empty : request.ValueName;
+        var valueName = request.ValueName == ServiceConstants.DefaultValueName ? string.Empty : request.ValueName;
         key.DeleteValue(valueName, throwOnMissingValue: false);
-        Log.Information(CommonConstants.LogTemplateDeletedRegistryValue, request.ValueName, request.HiveKey, request.SubKeyPath, request.RegistryView);
+        logger.Write(LogConstants.LogTemplateDeletedRegistryValue, request.ValueName, request.HiveKey, request.SubKeyPath, request.RegistryView);
     }
 }

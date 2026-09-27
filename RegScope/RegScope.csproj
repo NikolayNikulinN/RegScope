@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -6,31 +6,25 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Images\appIcon.ico</ApplicationIcon>
+    <ApplicationIcon>appIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Description>RegScope is a Windows desktop tool for searching and removing registry keys and values across selected registry hives.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <Resource Include="appIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\appIcon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\RegScope.Application\RegScope.Application.csproj" />
-    <ProjectReference Include="..\RegScope.Domain\RegScope.Domain.csproj" />
-    <ProjectReference Include="..\RegScope.Infrastructure\RegScope.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Docs\images\" />
+    <ProjectReference Include="..\RegScope.Logger\RegScope.Logger.csproj" />
+    <ProjectReference Include="..\RegScope.Presentation\RegScope.Presentation.csproj" />
+    <ProjectReference Include="..\RegScope.Services\RegScope.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,18 +1,26 @@
+using RegScope.Services.Constants;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Security;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RegScope.Constants;
+using RegScope.Logger.Constants;
 using RegScope.Models;
 using RegScope.Services;
-using Serilog;
+using RegScope.Logger.Abstract;
+using RegScope.Logger.Enums;
+using RegScope.Presentation.Abstract;
 
 namespace RegScope.ViewModels;
 
+/// <summary>Coordinates registry searches and selected deletions.</summary>
 public sealed partial class MainViewModel : ObservableObject
 {
+    private readonly ILoggerWrapper logger;
+    private readonly IResourceWrapper resourceWrapper;
+    private readonly IDialogService dialogService;
+    private readonly IUiDispatcher uiDispatcher;
+
     private readonly IRegistrySearchService registrySearchService;
     private readonly IRegistryDeleteService registryDeleteService;
     private readonly Dictionary<string, RegistrySearchResultGroupViewModel> resultGroupsByKey = new(StringComparer.OrdinalIgnoreCase);
@@ -32,18 +40,26 @@ public sealed partial class MainViewModel : ObservableObject
     private bool isSearching;
 
     [ObservableProperty]
-    private string searchStatus = Resources.Strings.ReadyStatus;
+    private string searchStatus;
 
     [ObservableProperty]
-    private string resultCountText = string.Format(Resources.Strings.ResultCountFormat, 0);
+    private string resultCountText;
 
-    public MainViewModel(IRegistrySearchService registrySearchService, IRegistryDeleteService registryDeleteService)
+    public MainViewModel(IRegistrySearchService registrySearchService, IRegistryDeleteService registryDeleteService,
+                         ILoggerWrapper logger, IResourceWrapper resourceWrapper,
+                         IDialogService dialogService, IUiDispatcher uiDispatcher)
     {
         this.registrySearchService = registrySearchService;
         this.registryDeleteService = registryDeleteService;
+        this.logger = logger;
+        this.resourceWrapper = resourceWrapper;
+        this.dialogService = dialogService;
+        this.uiDispatcher = uiDispatcher;
+        searchStatus = resourceWrapper.ReadyStatus;
+        resultCountText = string.Format(resourceWrapper.ResultCountFormat, 0);
 
         HiveOptions = new ObservableCollection<RegistryHiveOption>(
-            CommonConstants.HiveOptions.Select(option => new RegistryHiveOption(option.DisplayName, option.Hive, option.IsAllRegistry)));
+            ServiceConstants.HiveOptions.Select(option => new RegistryHiveOption(option.DisplayName, option.Hive, option.IsAllRegistry)));
         SelectedHiveOption = HiveOptions.FirstOrDefault();
 
         Results.CollectionChanged += (_, _) => UpdateResultCount();
@@ -73,26 +89,26 @@ public sealed partial class MainViewModel : ObservableObject
         ResultGroups.Clear();
         resultGroupsByKey.Clear();
         IsSearching = true;
-        SearchStatus = Resources.Strings.SearchingStatus;
-        Log.Information(CommonConstants.LogTemplateRegistrySearchStarted, SearchText, SelectedHiveOption.DisplayName);
+        SearchStatus = resourceWrapper.SearchingStatus;
+        logger.Write(LogConstants.LogTemplateRegistrySearchStarted, SearchText, SelectedHiveOption.DisplayName);
 
         try
         {
             var options = new RegistrySearchOptions(SearchText.Trim(), SelectedHiveOption);
             await Task.Run(() => registrySearchService.SearchAsync(options, AddBatchAsync, cancellationToken), cancellationToken);
-            SearchStatus = string.Format(Resources.Strings.SearchCompletedStatusFormat, Results.Count);
-            Log.Information(CommonConstants.LogTemplateRegistrySearchCompleted, Results.Count);
+            SearchStatus = string.Format(resourceWrapper.SearchCompletedStatusFormat, Results.Count);
+            logger.Write(LogConstants.LogTemplateRegistrySearchCompleted, Results.Count);
         }
         catch (OperationCanceledException)
         {
-            SearchStatus = string.Format(Resources.Strings.SearchStoppedStatusFormat, Results.Count);
-            Log.Information(CommonConstants.LogTemplateRegistrySearchStopped, Results.Count);
+            SearchStatus = string.Format(resourceWrapper.SearchStoppedStatusFormat, Results.Count);
+            logger.Write(LogConstants.LogTemplateRegistrySearchStopped, Results.Count);
         }
         catch (Exception ex)
         {
-            SearchStatus = Resources.Strings.SearchFailedStatus;
-            Log.Error(ex, CommonConstants.LogTemplateRegistrySearchFailed);
-            MessageBox.Show(Resources.Strings.SearchFailedMessage, Resources.Strings.AppTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            SearchStatus = resourceWrapper.SearchFailedStatus;
+            logger.Write(ex, LogLevel.Error, LogConstants.LogTemplateRegistrySearchFailed);
+            dialogService.ShowError(resourceWrapper.SearchFailedMessage, resourceWrapper.AppTitle);
         }
         finally
         {
@@ -106,7 +122,7 @@ public sealed partial class MainViewModel : ObservableObject
     private void Stop()
     {
         searchCancellationTokenSource?.Cancel();
-        SearchStatus = Resources.Strings.StoppingStatus;
+        SearchStatus = resourceWrapper.StoppingStatus;
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteSelected))]
@@ -118,8 +134,8 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        var message = string.Format(Resources.Strings.ConfirmDeleteSelectionListMessage, FormatDeleteList(operations));
-        if (!Confirm(message, Resources.Strings.DeleteSelectedButton, MessageBoxImage.Warning))
+        var message = string.Format(resourceWrapper.ConfirmDeleteSelectionListMessage, FormatDeleteList(operations));
+        if (!dialogService.Confirm(message, resourceWrapper.DeleteSelectedButton))
         {
             return;
         }
@@ -134,14 +150,14 @@ public sealed partial class MainViewModel : ObservableObject
 
     private async Task AddBatchAsync(IReadOnlyList<RegistrySearchResult> batch, CancellationToken cancellationToken)
     {
-        await Application.Current.Dispatcher.InvokeAsync(() =>
+        await uiDispatcher.InvokeAsync(() =>
         {
             foreach (var result in batch)
             {
                 Results.Add(result);
                 AddResultToGroup(result);
             }
-        });
+        }, cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
     }
@@ -178,7 +194,7 @@ public sealed partial class MainViewModel : ObservableObject
         var operations = new List<DeleteOperation>();
         operations.AddRange(selectedGroups.Select(group => new DeleteOperation(
             CreateGroupDeleteRequest(group),
-            string.Format(Resources.Strings.DeleteRegistryKeyListItemFormat, group.FullPath),
+            string.Format(resourceWrapper.DeleteRegistryKeyListItemFormat, group.FullPath),
             group,
             null)));
 
@@ -217,21 +233,19 @@ public sealed partial class MainViewModel : ObservableObject
                     operation.Item.RefreshErrorMessage();
                 }
 
-                Log.Warning(ex, CommonConstants.LogTemplateUnableToDeleteRegistryItem, operation.DisplayText);
+                logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToDeleteRegistryItem, operation.DisplayText);
             }
         }
 
         RemoveDeletedOperations(deletedOperations);
-        SearchStatus = string.Format(Resources.Strings.DeleteCompletedStatusFormat, deletedOperations.Count, operations.Count);
+        SearchStatus = string.Format(resourceWrapper.DeleteCompletedStatusFormat, deletedOperations.Count, operations.Count);
 
         var failed = operations.Count - deletedOperations.Count;
         if (failed > 0)
         {
-            MessageBox.Show(
-                string.Format(Resources.Strings.DeleteFailedMessageFormat, failed),
-                Resources.Strings.AppTitle,
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            dialogService.ShowWarning(
+                string.Format(resourceWrapper.DeleteFailedMessageFormat, failed),
+                resourceWrapper.AppTitle);
         }
 
         NotifySelectionChanged();
@@ -320,7 +334,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void UpdateResultCount()
     {
-        ResultCountText = string.Format(Resources.Strings.ResultCountFormat, Results.Count);
+        ResultCountText = string.Format(resourceWrapper.ResultCountFormat, Results.Count);
     }
 
     private void NotifySelectionChanged()
@@ -328,7 +342,7 @@ public sealed partial class MainViewModel : ObservableObject
         DeleteSelectedCommand.NotifyCanExecuteChanged();
     }
 
-    private static DeleteOperation CreateItemDeleteOperation(RegistrySearchResultItemViewModel item)
+    private DeleteOperation CreateItemDeleteOperation(RegistrySearchResultItemViewModel item)
     {
         var deleteKey = !item.Result.IsValueResult;
         return new DeleteOperation(
@@ -341,8 +355,8 @@ public sealed partial class MainViewModel : ObservableObject
                 DeleteKey = deleteKey
             },
             deleteKey
-                ? string.Format(Resources.Strings.DeleteRegistryKeyListItemFormat, item.Result.FullPath)
-                : string.Format(Resources.Strings.DeleteRegistryValueListItemFormat, item.Result.FullPath, item.Result.ValueName),
+                ? string.Format(resourceWrapper.DeleteRegistryKeyListItemFormat, item.Result.FullPath)
+                : string.Format(resourceWrapper.DeleteRegistryValueListItemFormat, item.Result.FullPath, item.Result.ValueName),
             null,
             item);
     }
@@ -377,7 +391,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         if (result.IsValueResult)
         {
-            return result.ValueName ?? CommonConstants.DefaultValueName;
+            return result.ValueName ?? ServiceConstants.DefaultValueName;
         }
 
         return GetLastRegistryPathPart(result.FullPath);
@@ -388,7 +402,7 @@ public sealed partial class MainViewModel : ObservableObject
         return $"{hive}|{view}|{subKeyPath}";
     }
 
-    private static string FormatDeleteList(IReadOnlyList<DeleteOperation> operations)
+    private string FormatDeleteList(IReadOnlyList<DeleteOperation> operations)
     {
         const int maxVisibleItems = 25;
         var visibleItems = operations.Take(maxVisibleItems).Select(operation => operation.DisplayText);
@@ -396,7 +410,7 @@ public sealed partial class MainViewModel : ObservableObject
         var hiddenCount = operations.Count - maxVisibleItems;
 
         return hiddenCount > 0
-            ? list + Environment.NewLine + string.Format(Resources.Strings.DeleteListMoreItemsFormat, hiddenCount)
+            ? list + Environment.NewLine + string.Format(resourceWrapper.DeleteListMoreItemsFormat, hiddenCount)
             : list;
     }
 
@@ -441,23 +455,18 @@ public sealed partial class MainViewModel : ObservableObject
         return separatorIndex >= 0 ? path[(separatorIndex + 1)..] : path;
     }
 
-    private static bool Confirm(string message, string caption, MessageBoxImage icon)
-    {
-        return MessageBox.Show(message, caption, MessageBoxButton.YesNo, icon, MessageBoxResult.No) == MessageBoxResult.Yes;
-    }
-
     private static bool IsDeletionException(Exception exception)
     {
         return exception is UnauthorizedAccessException or SecurityException or IOException or InvalidOperationException;
     }
 
-    private static string ToUserFriendlyDeleteError(Exception exception)
+    private string ToUserFriendlyDeleteError(Exception exception)
     {
         return exception switch
         {
-            UnauthorizedAccessException => Resources.Strings.AccessDeniedDeleteError,
-            SecurityException => Resources.Strings.AccessDeniedDeleteError,
-            IOException => Resources.Strings.RegistryIoError,
+            UnauthorizedAccessException => resourceWrapper.AccessDeniedDeleteError,
+            SecurityException => resourceWrapper.AccessDeniedDeleteError,
+            IOException => resourceWrapper.RegistryIoError,
             _ => exception.Message
         };
     }

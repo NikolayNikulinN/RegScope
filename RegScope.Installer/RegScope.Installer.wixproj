@@ -3,18 +3,20 @@
     <OutputName>RegScope</OutputName>
     <OutputType>Package</OutputType>
     <InstallerPlatform>x64</InstallerPlatform>
-    <OutputPath>bin\</OutputPath>
-    <OutDir>$(MSBuildProjectDirectory)\bin\</OutDir>
+    <OutputPlatform Condition="'$(Platform)' == 'x86'">x86</OutputPlatform>
+    <OutputPlatform Condition="'$(OutputPlatform)' == ''">x64</OutputPlatform>
+    <OutputPath>bin\$(OutputPlatform)\$(Configuration)\</OutputPath>
+    <OutDir>$(MSBuildProjectDirectory)\$(OutputPath)</OutDir>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <SuppressValidation>true</SuppressValidation>
-    <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\</RegScopePayloadDir>
-    <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(Configuration)\</RegScopePayloadIntermediateDir>
+    <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\$(OutputPlatform)\$(Configuration)\</RegScopePayloadDir>
+    <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(OutputPlatform)\$(Configuration)\</RegScopePayloadIntermediateDir>
     <DefineConstants>RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <Target Name="BuildRegScopePayload" BeforeTargets="CoreCompile">
     <MSBuild
-        Projects="..\..\RegScope\RegScope.csproj"
+        Projects="..\RegScope\RegScope.csproj"
         Targets="Build"
         Properties="Configuration=$(Configuration);Platform=$(Platform);OutDir=$(RegScopePayloadDir);IntermediateOutputPath=$(RegScopePayloadIntermediateDir)" />
   </Target>

@@ -4,18 +4,17 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:res="clr-namespace:RegScope.Resources;assembly=RegScope.Application"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:vm="clr-namespace:RegScope.ViewModels"
                  xmlns:views="clr-namespace:RegScope.Views"
-                 Title="{x:Static res:Strings.AppTitle}"
+                 Title="{Binding AppTitle, Source={StaticResource ResourceWrapper}}"
                  Width="1180"
                  Height="720"
                  MinWidth="960"
                  MinHeight="560"
                  Background="{DynamicResource AppBackgroundBrush}"
                  Foreground="{DynamicResource TextBrush}"
-                 Icon="pack://application:,,,/Images/appIcon.ico"
+                 Icon="pack://application:,,,/RegScope;component/appIcon.ico"
                  WindowStartupLocation="CenterScreen"
                  mc:Ignorable="d">
     <Window.Resources>
@@ -262,8 +261,8 @@
         </Grid.RowDefinitions>
 
         <ui:TitleBar Grid.Row="0"
-                     Title="{x:Static res:Strings.AppTitle}"
-                     Icon="{ui:ImageIcon 'pack://application:,,,/Images/appIcon.ico'}" />
+                     Title="{Binding AppTitle, Source={StaticResource ResourceWrapper}}"
+                     Icon="{ui:ImageIcon 'pack://application:,,,/RegScope;component/appIcon.ico'}" />
 
         <Border Grid.Row="1"
                 Margin="12,8,12,10"
@@ -303,17 +302,17 @@
                 <Button Grid.Column="2"
                         Margin="0,0,8,0"
                         Command="{Binding SearchCommand}"
-                        Content="{x:Static res:Strings.SearchButton}" />
+                        Content="{Binding SearchButton, Source={StaticResource ResourceWrapper}}" />
 
                 <Button Grid.Column="3"
                         Margin="0,0,8,0"
                         Command="{Binding StopCommand}"
-                        Content="{x:Static res:Strings.StopButton}" />
+                        Content="{Binding StopButton, Source={StaticResource ResourceWrapper}}" />
 
                 <Button Grid.Column="4"
                         Command="{Binding DeleteSelectedCommand}"
                         IsEnabled="{Binding IsIdle}"
-                        Content="{x:Static res:Strings.DeleteSelectedButton}" />
+                        Content="{Binding DeleteSelectedButton, Source={StaticResource ResourceWrapper}}" />
             </Grid>
         </Border>
 

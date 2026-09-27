@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AccessDeniedDeleteError" xml:space="preserve">
+    <value>Access was denied. Run RegScope as administrator and make sure your account has permission to change this registry item.</value>
+  </data>
+  <data name="AccessDeniedError" xml:space="preserve">
+    <value>Access denied.</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
+    <value>RegScope</value>
+  </data>
+  <data name="CanDeleteKeyColumn" xml:space="preserve">
+    <value>CanDeleteKey</value>
+  </data>
+  <data name="CannotDeleteRootKeyError" xml:space="preserve">
+    <value>Root registry hives cannot be deleted.</value>
+  </data>
+  <data name="ConfirmDeleteKeyMessageFormat" xml:space="preserve">
+    <value>Delete this registry key and all subkeys?
+
+{0}</value>
+  </data>
+  <data name="ConfirmDeleteSelectedMessageFormat" xml:space="preserve">
+    <value>Delete selected registry items? Count: {0}. Registry key matches will delete the whole key with all subkeys.</value>
+  </data>
+  <data name="ConfirmDeleteSelectionListMessage" xml:space="preserve">
+    <value>The following registry items will be deleted. Selected folders delete the registry key with all subkeys. Selected child values or subkeys delete only that child item.
+
+{0}
+
+Continue?</value>
+  </data>
+  <data name="ConfirmDeleteValueMessageFormat" xml:space="preserve">
+    <value>Delete registry value "{0}" from:
+
+{1}</value>
+  </data>
+  <data name="CopyPathMenuItem" xml:space="preserve">
+    <value>Copy Path</value>
+  </data>
+  <data name="DeleteCompletedStatusFormat" xml:space="preserve">
+    <value>Deleted {0} of {1} item(s).</value>
+  </data>
+  <data name="DeleteFailedMessageFormat" xml:space="preserve">
+    <value>{0} item(s) could not be deleted. See the ErrorMessage column for details.</value>
+  </data>
+  <data name="DeleteKeyMenuItem" xml:space="preserve">
+    <value>Delete Key</value>
+  </data>
+  <data name="DeleteListMoreItemsFormat" xml:space="preserve">
+    <value>... and {0} more item(s)</value>
+  </data>
+  <data name="DeleteRegistryKeyListItemFormat" xml:space="preserve">
+    <value>Key: {0}</value>
+  </data>
+  <data name="DeleteRegistryValueListItemFormat" xml:space="preserve">
+    <value>Value: {0}\{1}</value>
+  </data>
+  <data name="DeleteSelectedButton" xml:space="preserve">
+    <value>Delete Selected</value>
+  </data>
+  <data name="DeleteValueMenuItem" xml:space="preserve">
+    <value>Delete Value</value>
+  </data>
+  <data name="ErrorMessageColumn" xml:space="preserve">
+    <value>ErrorMessage</value>
+  </data>
+  <data name="FullPathColumn" xml:space="preserve">
+    <value>FullPath</value>
+  </data>
+  <data name="HiveColumn" xml:space="preserve">
+    <value>Hive</value>
+  </data>
+  <data name="MatchTypeColumn" xml:space="preserve">
+    <value>MatchType</value>
+  </data>
+  <data name="PathCopiedStatus" xml:space="preserve">
+    <value>Path copied to clipboard.</value>
+  </data>
+  <data name="ReadyStatus" xml:space="preserve">
+    <value>Ready.</value>
+  </data>
+  <data name="RegistryIoError" xml:space="preserve">
+    <value>The registry item could not be read or changed because Windows returned an I/O error.</value>
+  </data>
+  <data name="RegistryKeyNotFoundError" xml:space="preserve">
+    <value>The registry key was not found.</value>
+  </data>
+  <data name="RegistryValueNotSelectedError" xml:space="preserve">
+    <value>Select a registry value result first.</value>
+  </data>
+  <data name="ResultCountFormat" xml:space="preserve">
+    <value>{0} result(s)</value>
+  </data>
+  <data name="SearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchCompletedStatusFormat" xml:space="preserve">
+    <value>Search completed. Found {0} result(s).</value>
+  </data>
+  <data name="SearchFailedMessage" xml:space="preserve">
+    <value>The search failed unexpectedly. Check the log file for details.</value>
+  </data>
+  <data name="SearchFailedStatus" xml:space="preserve">
+    <value>Search failed.</value>
+  </data>
+  <data name="SearchingStatus" xml:space="preserve">
+    <value>Searching registry...</value>
+  </data>
+  <data name="SearchStoppedStatusFormat" xml:space="preserve">
+    <value>Search stopped. Found {0} result(s).</value>
+  </data>
+  <data name="StopButton" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="StoppingStatus" xml:space="preserve">
+    <value>Stopping search...</value>
+  </data>
+  <data name="UnhandledErrorMessage" xml:space="preserve">
+    <value>An unexpected error occurred. Check the log file for details.</value>
+  </data>
+  <data name="ValueDataColumn" xml:space="preserve">
+    <value>ValueData</value>
+  </data>
+  <data name="ValueKindColumn" xml:space="preserve">
+    <value>ValueKind</value>
+  </data>
+  <data name="ValueNameColumn" xml:space="preserve">
+    <value>ValueName</value>
+  </data>
+</root>

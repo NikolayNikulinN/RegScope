@@ -90,7 +90,7 @@ RegScope.Installer
 Build the MSI installer:
 
 ```powershell
-dotnet build RegScope.Installer\RegScope.Installer.csproj -c Release -p:Platform=x64
+dotnet build RegScope.Installer\RegScope.Installer.wixproj -c Release -p:Platform=x64
 ```
 
 The generated MSI package will be available in:

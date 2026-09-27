@@ -66,6 +66,35 @@ public sealed class HomeViewModelTests
     }
 
     [Fact]
+    public async Task Stop_RequiresConfirmationBeforeCancellingSearch()
+    {
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        search.SearchAsync(
+                Arg.Any<RegistrySearchOptions>(),
+                Arg.Any<Func<IReadOnlyList<RegistrySearchResult>, CancellationToken, Task>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(call =>
+            {
+                var cancellationToken = call.Arg<CancellationToken>();
+                started.TrySetResult(cancellationToken);
+                return Task.Delay(Timeout.Infinite, cancellationToken);
+            });
+        dialogs.Confirm(resources.ConfirmStopSearchMessage, resources.AppTitle).Returns(false, true);
+        var viewModel = CreateViewModel();
+        var searchTask = viewModel.SearchCommand.ExecuteAsync(null);
+        var searchCancellationToken = await started.Task;
+
+        viewModel.StopCommand.Execute(null);
+
+        searchCancellationToken.IsCancellationRequested.Should().BeFalse();
+        viewModel.StopCommand.Execute(null);
+
+        searchCancellationToken.IsCancellationRequested.Should().BeTrue();
+        await searchTask;
+        dialogs.Received(2).Confirm(resources.ConfirmStopSearchMessage, resources.AppTitle);
+    }
+
+    [Fact]
     public async Task Delete_ConfirmationDeclined_DoesNotCallRegistryService()
     {
         search.SearchAsync(Arg.Any<RegistrySearchOptions>(), Arg.Any<Func<IReadOnlyList<RegistrySearchResult>, CancellationToken, Task>>(), Arg.Any<CancellationToken>())
@@ -77,6 +106,9 @@ public sealed class HomeViewModelTests
 
         await viewModel.DeleteSelectedCommand.ExecuteAsync(null);
 
+        dialogs.Received(1).Confirm(
+            Arg.Is<string>(message => message != null && message.Contains("Are you sure you want to delete the selected data?", StringComparison.Ordinal)),
+            resources.DeleteSelectedButton);
         await delete.DidNotReceiveWithAnyArgs().DeleteAsync(default!, TestContext.Current.CancellationToken);
         viewModel.Results.Should().ContainSingle();
     }

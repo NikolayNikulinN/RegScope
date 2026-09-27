@@ -39,6 +39,8 @@ public sealed partial class RegistrySearchResultGroupModel : ObservableObject
 
     public string FullPath { get; }
 
+    public string DisplayFullPath => FullPath.Replace("\\", "  ›  ", StringComparison.Ordinal);
+
     public RegistryHive HiveKey { get; }
 
     public RegistryView RegistryView { get; }

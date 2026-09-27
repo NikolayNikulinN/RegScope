@@ -50,6 +50,9 @@ public sealed class ResourceWrapper : IResourceWrapper
     public string ConfirmDeleteValueMessageFormat => GetString(nameof(ConfirmDeleteValueMessageFormat));
 
     /// <inheritdoc />
+    public string ConfirmStopSearchMessage => GetString(nameof(ConfirmStopSearchMessage));
+
+    /// <inheritdoc />
     public string CopyPathMenuItem => GetString(nameof(CopyPathMenuItem));
 
     /// <inheritdoc />
@@ -125,6 +128,9 @@ public sealed class ResourceWrapper : IResourceWrapper
     public string SearchStoppedStatusFormat => GetString(nameof(SearchStoppedStatusFormat));
 
     /// <inheritdoc />
+    public string SearchWatermark => GetString(nameof(SearchWatermark));
+
+    /// <inheritdoc />
     public string StopButton => GetString(nameof(StopButton));
 
     /// <inheritdoc />
@@ -141,6 +147,15 @@ public sealed class ResourceWrapper : IResourceWrapper
 
     /// <inheritdoc />
     public string ValueNameColumn => GetString(nameof(ValueNameColumn));
+
+    /// <inheritdoc />
+    public string YesButton => GetString(nameof(YesButton));
+
+    /// <inheritdoc />
+    public string NoButton => GetString(nameof(NoButton));
+
+    /// <inheritdoc />
+    public string OkButton => GetString(nameof(OkButton));
 
     private static string GetString(string key) => AppResource.ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
 }

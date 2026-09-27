@@ -12,7 +12,10 @@
     <Color x:Key="AccentPressedColor">#1F5863</Color>
     <Color x:Key="AccentSoftColor">#D9EEF2</Color>
     <Color x:Key="TextColor">#1F2933</Color>
-    <Color x:Key="GroupRowColor">#F7F7F7</Color>
+    <Color x:Key="GroupRowColor">#EAF2FF</Color>
+    <Color x:Key="ValueTypeBadgeColor">#E8EDF3</Color>
+    <Color x:Key="ExpandStringBadgeColor">#DDF4EA</Color>
+    <Color x:Key="ExpandStringBadgeTextColor">#137A4B</Color>
     <Color x:Key="MutedTextColor">#667085</Color>
     <Color x:Key="ErrorTextColor">#B42318</Color>
     <Color x:Key="SoftDeleteButtonForegroundColor">#A4262C</Color>
@@ -37,6 +40,9 @@
     <SolidColorBrush x:Key="AccentSoftBrush" Color="{StaticResource AccentSoftColor}" />
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
     <SolidColorBrush x:Key="GroupRowBrush" Color="{StaticResource GroupRowColor}" />
+    <SolidColorBrush x:Key="ValueTypeBadgeBrush" Color="{StaticResource ValueTypeBadgeColor}" />
+    <SolidColorBrush x:Key="ExpandStringBadgeBrush" Color="{StaticResource ExpandStringBadgeColor}" />
+    <SolidColorBrush x:Key="ExpandStringBadgeTextBrush" Color="{StaticResource ExpandStringBadgeTextColor}" />
     <SolidColorBrush x:Key="MutedTextBrush" Color="{StaticResource MutedTextColor}" />
     <SolidColorBrush x:Key="ErrorTextBrush" Color="{StaticResource ErrorTextColor}" />
     <SolidColorBrush x:Key="ResultColumnSeparatorBrush" Color="{StaticResource ResultColumnSeparatorColor}" />

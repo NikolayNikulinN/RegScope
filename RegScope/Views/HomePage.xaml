@@ -10,123 +10,133 @@
     <UserControl.Resources>
         <HierarchicalDataTemplate DataType="{x:Type models:RegistrySearchResultGroupModel}"
                                   ItemsSource="{Binding Items}">
-            <Border MinHeight="38"
+            <Border MinHeight="44"
                     Margin="0,1,0,0"
-                    Padding="0,3"
+                    Padding="0,4"
                     Background="{StaticResource GroupRowBrush}"
+                    CornerRadius="5"
                     SnapsToDevicePixels="True">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="30" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="38" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <CheckBox Grid.Column="0"
-                              Margin="4,0"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
-                              MinWidth="18"
-                              MinHeight="18"
                               IsEnabled="{Binding DataContext.IsIdle, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                               IsThreeState="True"
                               IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Grid.Column="1"
-                               FontWeight="SemiBold"
-                               Style="{StaticResource ResultCellTextBlockStyle}"
-                               Text="{Binding Hive}" />
-                    <TextBlock Grid.Column="2"
-                               FontWeight="SemiBold"
-                               Style="{StaticResource ResultCellTextBlockStyle}"
-                               Text="{Binding FullPath}"
-                               ToolTip="{Binding FullPath}" />
+                    <StackPanel Grid.Column="1"
+                                Grid.ColumnSpan="3"
+                                Margin="8,0,12,0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <Image Width="22"
+                               Height="22"
+                               Margin="0,0,10,0"
+                               Source="pack://application:,,,/RegScope.Presentation;component/Images/folder.png"
+                               Stretch="Uniform" />
+                        <TextBlock FontWeight="SemiBold"
+                                   Style="{StaticResource RegistryResultNameTextStyle}"
+                                   Text="{Binding DisplayFullPath}" />
+                    </StackPanel>
+                    <Border Grid.Column="4"
+                            Margin="10,0,12,0"
+                            Background="{StaticResource AccentSoftBrush}"
+                            CornerRadius="10"
+                            Padding="10,4"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="Registry Key"
+                                   Foreground="{StaticResource AccentBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold" />
+                    </Border>
                     <TextBlock Grid.Column="3"
-                               Style="{StaticResource ResultCellTextBlockStyle}"
-                               Text="{Binding MatchType}" />
-                    <TextBlock Grid.Column="7"
-                               Style="{StaticResource ResultCellTextBlockStyle}"
-                               Text="{Binding CanDeleteKey}" />
-                    <TextBlock Grid.Column="8"
-                               Foreground="{StaticResource SoftDeleteButtonForegroundBrush}"
-                               Style="{StaticResource ResultCellTextBlockStyle}"
-                               Text="{Binding ErrorMessage}" />
+                               Margin="8,0"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource ErrorTextBrush}"
+                               Text="{Binding ErrorMessage}"
+                               TextTrimming="CharacterEllipsis" />
                 </Grid>
             </Border>
         </HierarchicalDataTemplate>
 
         <DataTemplate DataType="{x:Type models:RegistrySearchResultItemModel}">
-            <Grid MinHeight="36"
+            <Grid MinHeight="42"
+                  Margin="0,0,0,1"
+                  Background="{StaticResource SurfaceBrush}"
                   SnapsToDevicePixels="True">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="30" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="38" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <CheckBox HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              MinWidth="18"
-                              MinHeight="18"
-                              IsEnabled="{Binding DataContext.IsIdle, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                </Border>
-                <Border Grid.Column="1"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding Hive}" />
-                </Border>
-                <Border Grid.Column="2"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding DisplayPath}"
-                               ToolTip="{Binding FullPath}" />
-                </Border>
-                <Border Grid.Column="3"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding MatchType}" />
-                </Border>
-                <Border Grid.Column="4"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding ValueName}" />
-                </Border>
-                <Border Grid.Column="5"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
+                <CheckBox Grid.Column="0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsEnabled="{Binding DataContext.IsIdle, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                          IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Grid.Column="1"
+                            Margin="8,0,12,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Image x:Name="ResultIcon"
+                           Width="25"
+                           Height="22"
+                           Margin="0,0,12,0"
+                           Source="pack://application:,,,/RegScope.Presentation;component/Images/file.png"
+                           Stretch="Uniform" />
+                    <TextBlock x:Name="ResultName"
+                               FontWeight="SemiBold"
+                               Style="{StaticResource RegistryResultNameTextStyle}"
+                               Text="{Binding DisplayPath}" />
+                </StackPanel>
+                <Border x:Name="ResultTypeBadge"
+                        Grid.Column="2"
+                        Style="{StaticResource RegistryResultTypeBadgeStyle}">
+                    <TextBlock x:Name="ResultType"
+                               Foreground="{StaticResource TextBrush}"
+                               FontSize="12"
                                Text="{Binding ValueKind}" />
                 </Border>
-                <Border Grid.Column="6"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding ValueData}" />
-                </Border>
-                <Border Grid.Column="7"
-                        Style="{StaticResource ResultChildCellBorderStyle}">
-                    <TextBlock Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding CanDeleteKey}" />
-                </Border>
-                <Border Grid.Column="8"
-                        Style="{StaticResource ResultChildLastCellBorderStyle}">
-                    <TextBlock Foreground="{StaticResource ErrorTextBrush}"
-                               Style="{StaticResource ResultChildCellTextBlockStyle}"
-                               Text="{Binding ErrorMessage}" />
-                </Border>
+                <TextBlock Grid.Column="3"
+                           Margin="10,0,14,0"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource TextBrush}"
+                           Text="{Binding ValueData}"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip="{Binding ValueData}" />
+                <TextBlock Grid.Column="1"
+                           Grid.ColumnSpan="3"
+                           Margin="42,0,14,0"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource ErrorTextBrush}"
+                           Text="{Binding ErrorMessage}"
+                           TextTrimming="CharacterEllipsis"
+                           Panel.ZIndex="1" />
             </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Result.IsValueResult}" Value="False">
+                    <Setter TargetName="ResultIcon" Property="Source" Value="pack://application:,,,/RegScope.Presentation;component/Images/folder.png" />
+                    <Setter TargetName="ResultType" Property="Text" Value="Registry Key" />
+                    <Setter TargetName="ResultName" Property="FontWeight" Value="Normal" />
+                    <Setter TargetName="ResultTypeBadge" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                    <Setter TargetName="ResultType" Property="Foreground" Value="{StaticResource AccentBrush}" />
+                    <Setter TargetName="ResultType" Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ValueKind}" Value="ExpandString">
+                    <Setter TargetName="ResultTypeBadge" Property="Background" Value="{StaticResource ExpandStringBadgeBrush}" />
+                    <Setter TargetName="ResultType" Property="Foreground" Value="{StaticResource ExpandStringBadgeTextBrush}" />
+                    <Setter TargetName="ResultType" Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
     </UserControl.Resources>
 
@@ -154,16 +164,19 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0"
-                         Margin="0,0,8,0"
-                         IsEnabled="{Binding IsIdle}"
-                         VerticalAlignment="Center"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter"
-                                    Command="{Binding SearchCommand}" />
-                    </TextBox.InputBindings>
-                </TextBox>
+                <Grid Grid.Column="0" Margin="0,0,8,0">
+                    <TextBox x:Name="SearchTextBox"
+                             IsEnabled="{Binding IsIdle}"
+                             VerticalAlignment="Center"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding SearchCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock Text="{Binding SearchWatermark, Source={StaticResource ResourceWrapper}}"
+                               Style="{StaticResource SearchWatermarkTextBlockStyle}" />
+                </Grid>
 
                 <ComboBox Grid.Column="1"
                           Margin="0,0,8,0"
@@ -213,6 +226,22 @@
                         <StaticResource ResourceKey="RegistryTreeViewItemStyle" />
                     </TreeView.ItemContainerStyle>
                 </TreeView>
+
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsHitTestVisible="False"
+                           Text="No Data">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource EmptyResultsTextBlockStyle}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ResultGroups.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </Border>
 

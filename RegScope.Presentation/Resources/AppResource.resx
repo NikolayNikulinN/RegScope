@@ -156,9 +156,11 @@
     <value>Delete selected registry items? Count: {0}. Registry key matches will delete the whole key with all subkeys.</value>
   </data>
   <data name="ConfirmDeleteSelectionListMessage" xml:space="preserve">
-    <value>The following registry items will be deleted. Selected folders delete the registry key with all subkeys. Selected child values or subkeys delete only that child item.
+    <value>Are you sure you want to delete the selected data? This action cannot be undone.
 
 {0}
+
+Selected keys delete the key and all subkeys. Selected values or subkeys delete only that item.
 
 Continue?</value>
   </data>
@@ -259,5 +261,20 @@ Continue?</value>
   </data>
   <data name="ValueNameColumn" xml:space="preserve">
     <value>ValueName</value>
+  </data>
+  <data name="ConfirmStopSearchMessage" xml:space="preserve">
+    <value>Are you sure you want to stop the search?</value>
+  </data>
+  <data name="SearchWatermark" xml:space="preserve">
+    <value>Search value</value>
+  </data>
+  <data name="YesButton" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="NoButton" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="OkButton" xml:space="preserve">
+    <value>OK</value>
   </data>
 </root>

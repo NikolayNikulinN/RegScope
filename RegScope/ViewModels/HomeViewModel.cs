@@ -123,6 +123,11 @@ public sealed partial class HomeViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanStop))]
     private void Stop()
     {
+        if (!dialogService.Confirm(resourceWrapper.ConfirmStopSearchMessage, resourceWrapper.AppTitle))
+        {
+            return;
+        }
+
         searchCancellationTokenSource?.Cancel();
         SearchStatus = resourceWrapper.StoppingStatus;
     }

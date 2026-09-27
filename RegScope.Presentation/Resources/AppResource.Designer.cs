@@ -106,6 +106,24 @@ namespace RegScope.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stop the registry search before closing..
+        /// </summary>
+        internal static string CloseBlockedToolTip {
+            get {
+                return ResourceManager.GetString("CloseBlockedToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string CloseToolTip {
+            get {
+                return ResourceManager.GetString("CloseToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete this registry key and all subkeys?
         ///
         ///{0}.
@@ -146,6 +164,15 @@ namespace RegScope.Presentation.Resources {
         internal static string ConfirmDeleteValueMessageFormat {
             get {
                 return ResourceManager.GetString("ConfirmDeleteValueMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to stop the search?.
+        /// </summary>
+        internal static string ConfirmStopSearchMessage {
+            get {
+                return ResourceManager.GetString("ConfirmStopSearchMessage", resourceCulture);
             }
         }
         
@@ -267,6 +294,24 @@ namespace RegScope.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maximize.
+        /// </summary>
+        internal static string MaximizeToolTip {
+            get {
+                return ResourceManager.GetString("MaximizeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimize.
+        /// </summary>
+        internal static string MinimizeToolTip {
+            get {
+                return ResourceManager.GetString("MinimizeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path copied to clipboard..
         /// </summary>
         internal static string PathCopiedStatus {
@@ -308,6 +353,15 @@ namespace RegScope.Presentation.Resources {
         internal static string RegistryValueNotSelectedError {
             get {
                 return ResourceManager.GetString("RegistryValueNotSelectedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore.
+        /// </summary>
+        internal static string RestoreToolTip {
+            get {
+                return ResourceManager.GetString("RestoreToolTip", resourceCulture);
             }
         }
         
@@ -375,6 +429,15 @@ namespace RegScope.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search value.
+        /// </summary>
+        internal static string SearchWatermark {
+            get {
+                return ResourceManager.GetString("SearchWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stop.
         /// </summary>
         internal static string StopButton {
@@ -425,6 +488,33 @@ namespace RegScope.Presentation.Resources {
         internal static string ValueNameColumn {
             get {
                 return ResourceManager.GetString("ValueNameColumn", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string YesButton {
+            get {
+                return ResourceManager.GetString("YesButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string NoButton {
+            get {
+                return ResourceManager.GetString("NoButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string OkButton {
+            get {
+                return ResourceManager.GetString("OkButton", resourceCulture);
             }
         }
     }

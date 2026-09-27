@@ -16,4 +16,10 @@ public sealed class ImagePaths
     public string MinimizePath => "/RegScope.Presentation;component/Images/minimize.png";
 
     public string RestorePath => "/RegScope.Presentation;component/Images/restore.png";
+
+    public string WarningPath => "/RegScope.Presentation;component/Images/warning.png";
+
+    public string ErrorPath => "/RegScope.Presentation;component/Images/error.png";
+
+    public string InfoPath => "/RegScope.Presentation;component/Images/info.png";
 }

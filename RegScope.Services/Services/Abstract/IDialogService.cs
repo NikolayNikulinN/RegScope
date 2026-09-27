@@ -9,6 +9,9 @@ public interface IDialogService
     /// <summary>Shows a warning message.</summary>
     void ShowWarning(string message, string title);
 
+    /// <summary>Shows an informational message.</summary>
+    void ShowInformation(string message, string title);
+
     /// <summary>Asks for confirmation, with rejection selected by default.</summary>
     bool Confirm(string message, string title);
 }

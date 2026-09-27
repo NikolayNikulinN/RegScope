@@ -45,6 +45,9 @@ public interface IResourceWrapper
     /// <summary>Gets the localized ConfirmDeleteValueMessageFormat resource.</summary>
     string ConfirmDeleteValueMessageFormat { get; }
 
+    /// <summary>Gets the localized ConfirmStopSearchMessage resource.</summary>
+    string ConfirmStopSearchMessage { get; }
+
     /// <summary>Gets the localized CopyPathMenuItem resource.</summary>
     string CopyPathMenuItem { get; }
 
@@ -120,6 +123,9 @@ public interface IResourceWrapper
     /// <summary>Gets the localized SearchStoppedStatusFormat resource.</summary>
     string SearchStoppedStatusFormat { get; }
 
+    /// <summary>Gets the localized SearchWatermark resource.</summary>
+    string SearchWatermark { get; }
+
     /// <summary>Gets the localized StopButton resource.</summary>
     string StopButton { get; }
 
@@ -137,4 +143,13 @@ public interface IResourceWrapper
 
     /// <summary>Gets the localized ValueNameColumn resource.</summary>
     string ValueNameColumn { get; }
+
+    /// <summary>Gets the localized YesButton resource.</summary>
+    string YesButton { get; }
+
+    /// <summary>Gets the localized NoButton resource.</summary>
+    string NoButton { get; }
+
+    /// <summary>Gets the localized OkButton resource.</summary>
+    string OkButton { get; }
 }

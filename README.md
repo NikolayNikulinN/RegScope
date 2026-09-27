@@ -2,7 +2,7 @@
 
 Windows Registry Search and Cleanup Tool
 
-![RegScope Main Window](docs/images/main-window.png)
+![RegScope Main Window](RegScope/Docs/images/main-window.png) 
 
 RegScope is a Windows desktop application for searching, reviewing, and safely removing Windows Registry keys and values across multiple registry hives.
 

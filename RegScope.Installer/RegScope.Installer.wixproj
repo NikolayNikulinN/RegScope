@@ -5,12 +5,12 @@
     <InstallerPlatform>x64</InstallerPlatform>
     <OutputPlatform Condition="'$(Platform)' == 'x86'">x86</OutputPlatform>
     <OutputPlatform Condition="'$(OutputPlatform)' == ''">x64</OutputPlatform>
-    <OutputPath>bin\$(OutputPlatform)\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\$(OutputPlatform)\</OutputPath>
     <OutDir>$(MSBuildProjectDirectory)\$(OutputPath)</OutDir>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <SuppressValidation>true</SuppressValidation>
-    <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\$(OutputPlatform)\$(Configuration)\</RegScopePayloadDir>
-    <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(OutputPlatform)\$(Configuration)\</RegScopePayloadIntermediateDir>
+    <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\$(Configuration)\$(OutputPlatform)\</RegScopePayloadDir>
+    <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(Configuration)\$(OutputPlatform)\</RegScopePayloadIntermediateDir>
     <DefineConstants>RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace RegScope.Tests;
 
-public sealed class MainViewModelTests
+public sealed class HomeViewModelTests
 {
     private readonly IRegistrySearchService search = Substitute.For<IRegistrySearchService>();
     private readonly IRegistryDeleteService delete = Substitute.For<IRegistryDeleteService>();
@@ -81,7 +81,7 @@ public sealed class MainViewModelTests
         viewModel.Results.Should().ContainSingle();
     }
 
-    private MainViewModel CreateViewModel() => new(search, delete, logger, resources, dialogs, new ImmediateDispatcher()) { SearchText = "test" };
+    private HomeViewModel CreateViewModel() => new(search, delete, logger, resources, dialogs, new ImmediateDispatcher()) { SearchText = "test" };
 
     private static RegistrySearchResult CreateResult() => new()
     {

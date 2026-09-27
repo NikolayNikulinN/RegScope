@@ -14,4 +14,6 @@ public sealed class ImagePaths
     public string MaximizePath => "/RegScope.Presentation;component/Images/maximize.png";
 
     public string MinimizePath => "/RegScope.Presentation;component/Images/minimize.png";
+
+    public string RestorePath => "/RegScope.Presentation;component/Images/restore.png";
 }

@@ -1,481 +1,64 @@
-using RegScope.Services.Constants;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Security;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using RegScope.Logger.Constants;
-using RegScope.Models;
-using RegScope.Services;
-using RegScope.Logger.Abstract;
-using RegScope.Logger.Enums;
 using RegScope.Presentation.Abstract;
+using RegScope.Presentation.Constants;
+using RegScope.Services.Constants;
 
 namespace RegScope.ViewModels;
 
-/// <summary>Coordinates registry searches and selected deletions.</summary>
+/// <summary>Coordinates the main window chrome and active page.</summary>
 public sealed partial class MainViewModel : ObservableObject
 {
-    private readonly ILoggerWrapper logger;
+    private readonly AppConstants appConstants;
     private readonly IResourceWrapper resourceWrapper;
-    private readonly IDialogService dialogService;
-    private readonly IUiDispatcher uiDispatcher;
-
-    private readonly IRegistrySearchService registrySearchService;
-    private readonly IRegistryDeleteService registryDeleteService;
-    private readonly Dictionary<string, RegistrySearchResultGroupViewModel> resultGroupsByKey = new(StringComparer.OrdinalIgnoreCase);
-    private CancellationTokenSource? searchCancellationTokenSource;
+    private readonly HomeViewModel homeViewModel;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
-    private string searchText = string.Empty;
+    private string maximizeRestoreIconPath;
 
     [ObservableProperty]
-    private RegistryHiveOption? selectedHiveOption;
+    private string maximizeRestoreToolTip;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
-    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
-    [NotifyCanExecuteChangedFor(nameof(DeleteSelectedCommand))]
-    private bool isSearching;
-
-    [ObservableProperty]
-    private string searchStatus;
-
-    [ObservableProperty]
-    private string resultCountText;
-
-    public MainViewModel(IRegistrySearchService registrySearchService, IRegistryDeleteService registryDeleteService,
-                         ILoggerWrapper logger, IResourceWrapper resourceWrapper,
-                         IDialogService dialogService, IUiDispatcher uiDispatcher)
+    public MainViewModel(AppConstants appConstants, IResourceWrapper resourceWrapper, HomeViewModel homeViewModel)
     {
-        this.registrySearchService = registrySearchService;
-        this.registryDeleteService = registryDeleteService;
-        this.logger = logger;
+        ArgumentNullException.ThrowIfNull(appConstants);
+        ArgumentNullException.ThrowIfNull(resourceWrapper);
+        ArgumentNullException.ThrowIfNull(homeViewModel);
+
+        this.appConstants = appConstants;
         this.resourceWrapper = resourceWrapper;
-        this.dialogService = dialogService;
-        this.uiDispatcher = uiDispatcher;
-        searchStatus = resourceWrapper.ReadyStatus;
-        resultCountText = string.Format(resourceWrapper.ResultCountFormat, 0);
-
-        HiveOptions = new ObservableCollection<RegistryHiveOption>(
-            ServiceConstants.HiveOptions.Select(option => new RegistryHiveOption(option.DisplayName, option.Hive, option.IsAllRegistry)));
-        SelectedHiveOption = HiveOptions.FirstOrDefault();
-
-        Results.CollectionChanged += (_, _) => UpdateResultCount();
+        this.homeViewModel = homeViewModel;
+        ActivePage = homeViewModel;
+        maximizeRestoreIconPath = appConstants.Images.MaximizePath;
+        maximizeRestoreToolTip = resourceWrapper.MaximizeToolTip;
+        homeViewModel.PropertyChanged += OnHomeViewModelPropertyChanged;
     }
 
-    public ObservableCollection<RegistryHiveOption> HiveOptions { get; }
+    public object ActivePage { get; }
 
-    public ObservableCollection<RegistrySearchResult> Results { get; } = [];
+    public AppConstants AppConstants => appConstants;
 
-    public ObservableCollection<RegistrySearchResultGroupViewModel> ResultGroups { get; } = [];
+    public IResourceWrapper ResourceWrapper => resourceWrapper;
 
-    public bool IsIdle => !IsSearching;
+    public bool CanCloseApplication => homeViewModel.IsIdle;
 
-    [RelayCommand(CanExecute = nameof(CanSearch))]
-    private async Task SearchAsync()
+    public string CloseButtonToolTip => CanCloseApplication
+        ? resourceWrapper.CloseToolTip
+        : resourceWrapper.CloseBlockedToolTip;
+
+    /// <summary>Updates the maximize or restore icon for the current window state.</summary>
+    public void UpdateMaximizeRestoreState(bool isMaximized)
     {
-        if (SelectedHiveOption is null)
-        {
-            return;
-        }
+        MaximizeRestoreIconPath = isMaximized ? appConstants.Images.RestorePath : appConstants.Images.MaximizePath;
+        MaximizeRestoreToolTip = isMaximized ? resourceWrapper.RestoreToolTip : resourceWrapper.MaximizeToolTip;
+    }
 
-        searchCancellationTokenSource?.Dispose();
-        searchCancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = searchCancellationTokenSource.Token;
-
-        Results.Clear();
-        ResultGroups.Clear();
-        resultGroupsByKey.Clear();
-        IsSearching = true;
-        SearchStatus = resourceWrapper.SearchingStatus;
-        logger.Write(LogConstants.LogTemplateRegistrySearchStarted, SearchText, SelectedHiveOption.DisplayName);
-
-        try
+    private void OnHomeViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(HomeViewModel.IsIdle))
         {
-            var options = new RegistrySearchOptions(SearchText.Trim(), SelectedHiveOption);
-            await Task.Run(() => registrySearchService.SearchAsync(options, AddBatchAsync, cancellationToken), cancellationToken);
-            SearchStatus = string.Format(resourceWrapper.SearchCompletedStatusFormat, Results.Count);
-            logger.Write(LogConstants.LogTemplateRegistrySearchCompleted, Results.Count);
-        }
-        catch (OperationCanceledException)
-        {
-            SearchStatus = string.Format(resourceWrapper.SearchStoppedStatusFormat, Results.Count);
-            logger.Write(LogConstants.LogTemplateRegistrySearchStopped, Results.Count);
-        }
-        catch (Exception ex)
-        {
-            SearchStatus = resourceWrapper.SearchFailedStatus;
-            logger.Write(ex, LogLevel.Error, LogConstants.LogTemplateRegistrySearchFailed);
-            dialogService.ShowError(resourceWrapper.SearchFailedMessage, resourceWrapper.AppTitle);
-        }
-        finally
-        {
-            IsSearching = false;
-            searchCancellationTokenSource?.Dispose();
-            searchCancellationTokenSource = null;
+            OnPropertyChanged(nameof(CanCloseApplication));
+            OnPropertyChanged(nameof(CloseButtonToolTip));
         }
     }
-
-    [RelayCommand(CanExecute = nameof(CanStop))]
-    private void Stop()
-    {
-        searchCancellationTokenSource?.Cancel();
-        SearchStatus = resourceWrapper.StoppingStatus;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanDeleteSelected))]
-    private async Task DeleteSelectedAsync()
-    {
-        var operations = CreateSelectedDeleteOperations();
-        if (operations.Count == 0)
-        {
-            return;
-        }
-
-        var message = string.Format(resourceWrapper.ConfirmDeleteSelectionListMessage, FormatDeleteList(operations));
-        if (!dialogService.Confirm(message, resourceWrapper.DeleteSelectedButton))
-        {
-            return;
-        }
-
-        await ExecuteDeleteOperationsAsync(operations);
-    }
-
-    partial void OnIsSearchingChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsIdle));
-    }
-
-    private async Task AddBatchAsync(IReadOnlyList<RegistrySearchResult> batch, CancellationToken cancellationToken)
-    {
-        await uiDispatcher.InvokeAsync(() =>
-        {
-            foreach (var result in batch)
-            {
-                Results.Add(result);
-                AddResultToGroup(result);
-            }
-        }, cancellationToken);
-
-        cancellationToken.ThrowIfCancellationRequested();
-    }
-
-    private void AddResultToGroup(RegistrySearchResult result)
-    {
-        var groupInfo = CreateGroupInfo(result);
-        var key = CreateGroupKey(result.HiveKey, result.RegistryView, groupInfo.SubKeyPath);
-
-        if (!resultGroupsByKey.TryGetValue(key, out var group))
-        {
-            group = new RegistrySearchResultGroupViewModel(
-                result.Hive,
-                groupInfo.FullPath,
-                result.HiveKey,
-                result.RegistryView,
-                groupInfo.SubKeyPath,
-                !string.IsNullOrWhiteSpace(groupInfo.SubKeyPath),
-                NotifySelectionChanged);
-            resultGroupsByKey.Add(key, group);
-            ResultGroups.Add(group);
-        }
-
-        group.Items.Add(new RegistrySearchResultItemViewModel(result, group, CreateItemDisplayPath(result), NotifySelectionChanged));
-        group.RefreshSelectionFromChildren();
-    }
-
-    private IReadOnlyList<DeleteOperation> CreateSelectedDeleteOperations()
-    {
-        var selectedGroups = ResultGroups
-            .Where(group => group.IsSelected == true && group.CanDeleteKey)
-            .ToArray();
-
-        var operations = new List<DeleteOperation>();
-        operations.AddRange(selectedGroups.Select(group => new DeleteOperation(
-            CreateGroupDeleteRequest(group),
-            string.Format(resourceWrapper.DeleteRegistryKeyListItemFormat, group.FullPath),
-            group,
-            null)));
-
-        var selectedItems = ResultGroups
-            .SelectMany(group => group.Items)
-            .Where(item => item.IsSelected)
-            .Where(item => !IsCoveredBySelectedGroup(item.Result, selectedGroups));
-
-        operations.AddRange(selectedItems.Select(CreateItemDeleteOperation));
-
-        return RemoveOperationsCoveredByKeyDeletes(operations);
-    }
-
-    private async Task ExecuteDeleteOperationsAsync(IReadOnlyList<DeleteOperation> operations)
-    {
-        var deletedOperations = new List<DeleteOperation>();
-
-        foreach (var operation in operations)
-        {
-            try
-            {
-                await registryDeleteService.DeleteAsync(operation.Request, CancellationToken.None);
-                deletedOperations.Add(operation);
-            }
-            catch (Exception ex) when (IsDeletionException(ex))
-            {
-                var errorMessage = ToUserFriendlyDeleteError(ex);
-                if (operation.Group is not null)
-                {
-                    operation.Group.ErrorMessage = errorMessage;
-                }
-
-                if (operation.Item is not null)
-                {
-                    operation.Item.Result.ErrorMessage = errorMessage;
-                    operation.Item.RefreshErrorMessage();
-                }
-
-                logger.Write(ex, LogLevel.Warning, LogConstants.LogTemplateUnableToDeleteRegistryItem, operation.DisplayText);
-            }
-        }
-
-        RemoveDeletedOperations(deletedOperations);
-        SearchStatus = string.Format(resourceWrapper.DeleteCompletedStatusFormat, deletedOperations.Count, operations.Count);
-
-        var failed = operations.Count - deletedOperations.Count;
-        if (failed > 0)
-        {
-            dialogService.ShowWarning(
-                string.Format(resourceWrapper.DeleteFailedMessageFormat, failed),
-                resourceWrapper.AppTitle);
-        }
-
-        NotifySelectionChanged();
-        UpdateResultCount();
-    }
-
-    private void RemoveDeletedOperations(IReadOnlyList<DeleteOperation> deletedOperations)
-    {
-        foreach (var operation in deletedOperations)
-        {
-            if (operation.Request.DeleteKey)
-            {
-                RemoveDeletedKey(operation.Request);
-            }
-            else if (operation.Item is not null)
-            {
-                RemoveItem(operation.Item);
-            }
-        }
-    }
-
-    private void RemoveDeletedKey(RegistryDeleteRequest request)
-    {
-        foreach (var group in ResultGroups.ToArray())
-        {
-            if (group.HiveKey == request.HiveKey
-                && group.RegistryView == request.RegistryView
-                && IsSameOrDescendant(group.SubKeyPath, request.SubKeyPath))
-            {
-                RemoveGroup(group);
-            }
-        }
-
-        foreach (var group in ResultGroups.ToArray())
-        {
-            foreach (var item in group.Items.ToArray())
-            {
-                if (item.Result.HiveKey == request.HiveKey
-                    && item.Result.RegistryView == request.RegistryView
-                    && IsSameOrDescendant(item.Result.SubKeyPath, request.SubKeyPath))
-                {
-                    RemoveItem(item);
-                }
-            }
-        }
-    }
-
-    private void RemoveItem(RegistrySearchResultItemViewModel item)
-    {
-        Results.Remove(item.Result);
-        item.Parent.Items.Remove(item);
-        item.Parent.RefreshSelectionFromChildren();
-
-        if (item.Parent.Items.Count == 0)
-        {
-            RemoveGroup(item.Parent);
-        }
-    }
-
-    private void RemoveGroup(RegistrySearchResultGroupViewModel group)
-    {
-        foreach (var item in group.Items.ToArray())
-        {
-            Results.Remove(item.Result);
-        }
-
-        group.Items.Clear();
-        ResultGroups.Remove(group);
-        resultGroupsByKey.Remove(CreateGroupKey(group.HiveKey, group.RegistryView, group.SubKeyPath));
-    }
-
-    private bool CanSearch()
-    {
-        return !IsSearching && !string.IsNullOrWhiteSpace(SearchText) && SelectedHiveOption is not null;
-    }
-
-    private bool CanStop()
-    {
-        return IsSearching;
-    }
-
-    private bool CanDeleteSelected()
-    {
-        return IsIdle && ResultGroups.Any(group => group.IsSelected == true || group.Items.Any(item => item.IsSelected));
-    }
-
-    private void UpdateResultCount()
-    {
-        ResultCountText = string.Format(resourceWrapper.ResultCountFormat, Results.Count);
-    }
-
-    private void NotifySelectionChanged()
-    {
-        DeleteSelectedCommand.NotifyCanExecuteChanged();
-    }
-
-    private DeleteOperation CreateItemDeleteOperation(RegistrySearchResultItemViewModel item)
-    {
-        var deleteKey = !item.Result.IsValueResult;
-        return new DeleteOperation(
-            new RegistryDeleteRequest
-            {
-                HiveKey = item.Result.HiveKey,
-                RegistryView = item.Result.RegistryView,
-                SubKeyPath = item.Result.SubKeyPath,
-                ValueName = item.Result.ValueName,
-                DeleteKey = deleteKey
-            },
-            deleteKey
-                ? string.Format(resourceWrapper.DeleteRegistryKeyListItemFormat, item.Result.FullPath)
-                : string.Format(resourceWrapper.DeleteRegistryValueListItemFormat, item.Result.FullPath, item.Result.ValueName),
-            null,
-            item);
-    }
-
-    private static RegistryDeleteRequest CreateGroupDeleteRequest(RegistrySearchResultGroupViewModel group)
-    {
-        return new RegistryDeleteRequest
-        {
-            HiveKey = group.HiveKey,
-            RegistryView = group.RegistryView,
-            SubKeyPath = group.SubKeyPath,
-            DeleteKey = true
-        };
-    }
-
-    private static GroupInfo CreateGroupInfo(RegistrySearchResult result)
-    {
-        if (result.IsValueResult)
-        {
-            return new GroupInfo(result.FullPath, result.SubKeyPath);
-        }
-
-        if (string.IsNullOrWhiteSpace(result.SubKeyPath))
-        {
-            return new GroupInfo(result.FullPath, string.Empty);
-        }
-
-        return new GroupInfo(GetParentRegistryPath(result.FullPath), GetParentRegistryPath(result.SubKeyPath));
-    }
-
-    private static string CreateItemDisplayPath(RegistrySearchResult result)
-    {
-        if (result.IsValueResult)
-        {
-            return result.ValueName ?? ServiceConstants.DefaultValueName;
-        }
-
-        return GetLastRegistryPathPart(result.FullPath);
-    }
-
-    private static string CreateGroupKey(Microsoft.Win32.RegistryHive hive, Microsoft.Win32.RegistryView view, string subKeyPath)
-    {
-        return $"{hive}|{view}|{subKeyPath}";
-    }
-
-    private string FormatDeleteList(IReadOnlyList<DeleteOperation> operations)
-    {
-        const int maxVisibleItems = 25;
-        var visibleItems = operations.Take(maxVisibleItems).Select(operation => operation.DisplayText);
-        var list = string.Join(Environment.NewLine, visibleItems);
-        var hiddenCount = operations.Count - maxVisibleItems;
-
-        return hiddenCount > 0
-            ? list + Environment.NewLine + string.Format(resourceWrapper.DeleteListMoreItemsFormat, hiddenCount)
-            : list;
-    }
-
-    private static IReadOnlyList<DeleteOperation> RemoveOperationsCoveredByKeyDeletes(IReadOnlyList<DeleteOperation> operations)
-    {
-        var keyDeletes = operations
-            .Where(operation => operation.Request.DeleteKey)
-            .ToArray();
-
-        return operations
-            .Where(operation => !keyDeletes.Any(keyDelete =>
-                !ReferenceEquals(operation, keyDelete)
-                && operation.Request.HiveKey == keyDelete.Request.HiveKey
-                && operation.Request.RegistryView == keyDelete.Request.RegistryView
-                && IsSameOrDescendant(operation.Request.SubKeyPath, keyDelete.Request.SubKeyPath)))
-            .ToArray();
-    }
-
-    private static bool IsCoveredBySelectedGroup(RegistrySearchResult result, IReadOnlyCollection<RegistrySearchResultGroupViewModel> selectedGroups)
-    {
-        return selectedGroups.Any(group =>
-            result.HiveKey == group.HiveKey
-            && result.RegistryView == group.RegistryView
-            && IsSameOrDescendant(result.SubKeyPath, group.SubKeyPath));
-    }
-
-    private static bool IsSameOrDescendant(string candidatePath, string parentPath)
-    {
-        return string.Equals(candidatePath, parentPath, StringComparison.OrdinalIgnoreCase)
-            || candidatePath.StartsWith(parentPath + "\\", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string GetParentRegistryPath(string path)
-    {
-        var separatorIndex = path.LastIndexOf('\\');
-        return separatorIndex >= 0 ? path[..separatorIndex] : string.Empty;
-    }
-
-    private static string GetLastRegistryPathPart(string path)
-    {
-        var separatorIndex = path.LastIndexOf('\\');
-        return separatorIndex >= 0 ? path[(separatorIndex + 1)..] : path;
-    }
-
-    private static bool IsDeletionException(Exception exception)
-    {
-        return exception is UnauthorizedAccessException or SecurityException or IOException or InvalidOperationException;
-    }
-
-    private string ToUserFriendlyDeleteError(Exception exception)
-    {
-        return exception switch
-        {
-            UnauthorizedAccessException => resourceWrapper.AccessDeniedDeleteError,
-            SecurityException => resourceWrapper.AccessDeniedDeleteError,
-            IOException => resourceWrapper.RegistryIoError,
-            _ => exception.Message
-        };
-    }
-
-    private sealed record DeleteOperation(
-        RegistryDeleteRequest Request,
-        string DisplayText,
-        RegistrySearchResultGroupViewModel? Group,
-        RegistrySearchResultItemViewModel? Item);
-
-    private sealed record GroupInfo(string FullPath, string SubKeyPath);
 }

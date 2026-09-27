@@ -17,6 +17,21 @@ public sealed class ResourceWrapper : IResourceWrapper
     public string AppTitle => GetString(nameof(AppTitle));
 
     /// <inheritdoc />
+    public string MinimizeToolTip => GetString(nameof(MinimizeToolTip));
+
+    /// <inheritdoc />
+    public string MaximizeToolTip => GetString(nameof(MaximizeToolTip));
+
+    /// <inheritdoc />
+    public string RestoreToolTip => GetString(nameof(RestoreToolTip));
+
+    /// <inheritdoc />
+    public string CloseToolTip => GetString(nameof(CloseToolTip));
+
+    /// <inheritdoc />
+    public string CloseBlockedToolTip => GetString(nameof(CloseBlockedToolTip));
+
+    /// <inheritdoc />
     public string CanDeleteKeyColumn => GetString(nameof(CanDeleteKeyColumn));
 
     /// <inheritdoc />

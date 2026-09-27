@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using RegScope.Models;
 
-namespace RegScope.ViewModels;
+namespace RegScope.Model;
 
-public sealed partial class RegistrySearchResultItemViewModel : ObservableObject
+public sealed partial class RegistrySearchResultItemModel : ObservableObject
 {
     private readonly Action selectionChanged;
     private bool suppressParentNotification;
@@ -11,9 +11,9 @@ public sealed partial class RegistrySearchResultItemViewModel : ObservableObject
     [ObservableProperty]
     private bool isSelected;
 
-    public RegistrySearchResultItemViewModel(
+    public RegistrySearchResultItemModel(
         RegistrySearchResult result,
-        RegistrySearchResultGroupViewModel parent,
+        RegistrySearchResultGroupModel parent,
         string displayPath,
         Action selectionChanged)
     {
@@ -25,7 +25,7 @@ public sealed partial class RegistrySearchResultItemViewModel : ObservableObject
 
     public RegistrySearchResult Result { get; }
 
-    public RegistrySearchResultGroupViewModel Parent { get; }
+    public RegistrySearchResultGroupModel Parent { get; }
 
     public string DisplayPath { get; }
 

@@ -1,10 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Win32;
+namespace RegScope.Model;
 
-namespace RegScope.ViewModels;
-
-public sealed partial class RegistrySearchResultGroupViewModel : ObservableObject
+public sealed partial class RegistrySearchResultGroupModel : ObservableObject
 {
     private readonly Action selectionChanged;
     private bool suppressChildSelection;
@@ -18,7 +17,7 @@ public sealed partial class RegistrySearchResultGroupViewModel : ObservableObjec
     [ObservableProperty]
     private string? errorMessage;
 
-    public RegistrySearchResultGroupViewModel(
+    public RegistrySearchResultGroupModel(
         string hive,
         string fullPath,
         RegistryHive hiveKey,
@@ -50,7 +49,7 @@ public sealed partial class RegistrySearchResultGroupViewModel : ObservableObjec
 
     public string MatchType => "RegistryKey";
 
-    public ObservableCollection<RegistrySearchResultItemViewModel> Items { get; } = [];
+    public ObservableCollection<RegistrySearchResultItemModel> Items { get; } = [];
 
     public void RefreshSelectionFromChildren()
     {

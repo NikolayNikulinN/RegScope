@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RegScope.Logger.Abstract;
 using RegScope.Logger.Wrappers;
 using RegScope.Presentation.Abstract;
+using RegScope.Presentation.Constants;
 using RegScope.Presentation.Wrappers;
 using RegScope.Services;
 using RegScope.ViewModels;
@@ -17,11 +18,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
         services.AddSingleton<IResourceWrapper, ResourceWrapper>();
+        services.AddSingleton<AppConstants>();
         services.AddSingleton<IRegistrySearchService, RegistrySearchService>();
         services.AddSingleton<IRegistryDeleteService, RegistryDeleteService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton(_ => System.Windows.Application.Current.Dispatcher);
         services.AddSingleton<IUiDispatcher, UiDispatcher>();
+        services.AddTransient<HomeViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<MainWindow>();
         return services;

@@ -126,6 +126,21 @@
   <data name="AppTitle" xml:space="preserve">
     <value>RegScope</value>
   </data>
+  <data name="MinimizeToolTip" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="MaximizeToolTip" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+  <data name="RestoreToolTip" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="CloseToolTip" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CloseBlockedToolTip" xml:space="preserve">
+    <value>Stop the registry search before closing.</value>
+  </data>
   <data name="CanDeleteKeyColumn" xml:space="preserve">
     <value>CanDeleteKey</value>
   </data>

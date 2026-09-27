@@ -12,6 +12,21 @@ public interface IResourceWrapper
     /// <summary>Gets the localized AppTitle resource.</summary>
     string AppTitle { get; }
 
+    /// <summary>Gets the localized MinimizeToolTip resource.</summary>
+    string MinimizeToolTip { get; }
+
+    /// <summary>Gets the localized MaximizeToolTip resource.</summary>
+    string MaximizeToolTip { get; }
+
+    /// <summary>Gets the localized RestoreToolTip resource.</summary>
+    string RestoreToolTip { get; }
+
+    /// <summary>Gets the localized CloseToolTip resource.</summary>
+    string CloseToolTip { get; }
+
+    /// <summary>Gets the localized CloseBlockedToolTip resource.</summary>
+    string CloseBlockedToolTip { get; }
+
     /// <summary>Gets the localized CanDeleteKeyColumn resource.</summary>
     string CanDeleteKeyColumn { get; }
 

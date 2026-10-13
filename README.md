@@ -2,7 +2,7 @@
 
 Windows Registry Search and Cleanup Tool
 
-![RegScope Main Window](RegScope/Docs/images/main-window.png) 
+![RegScope Main Window](RegScope/Docs/Images/app.png)
 
 RegScope is a Windows desktop application for searching, reviewing, and safely removing Windows Registry keys and values across multiple registry hives.
 
@@ -16,8 +16,7 @@ Built with WPF on .NET 9 using the MVVM pattern and packaged with WiX Toolset.
 * Search within a specific registry hive or across all supported hives.
 * Scan both 64-bit and 32-bit registry views on 64-bit Windows.
 * Display grouped search results for easier navigation.
-* View hive, path, match type, value name, value kind, and value data.
-* Copy registry paths directly from search results.
+* Review matching keys and values with their registry paths, value types, and data.
 * Select and delete individual registry keys or values.
 * Bulk delete selected registry items.
 * Confirmation dialogs before deletion.
@@ -32,6 +31,7 @@ Built with WPF on .NET 9 using the MVVM pattern and packaged with WiX Toolset.
 * CommunityToolkit.Mvvm
 * Microsoft.Win32.Registry
 * Serilog
+* xUnit.net v3
 * WiX Toolset 6
 
 ## Requirements
@@ -40,12 +40,12 @@ Built with WPF on .NET 9 using the MVVM pattern and packaged with WiX Toolset.
 
 * Windows 10 / Windows 11
 * .NET 9 SDK
-* Visual Studio 2022
-* WiX Toolset SDK
+* Visual Studio 2022 (optional for command-line builds)
 
 ### Runtime
 
-* Windows operating system
+* Windows 10 / Windows 11
+* .NET 9 Desktop Runtime (x64 for the MSI installer)
 * Administrator privileges may be required to access protected registry locations
 
 ## Build
@@ -96,7 +96,7 @@ dotnet build RegScope.Installer\RegScope.Installer.wixproj -c Release -p:Platfor
 The generated MSI package will be available in:
 
 ```text
-RegScope.Installer\bin\x64\Release\
+RegScope.Installer\bin\Release\x64\
 ```
 
 If Visual Studio was already open after installer project changes, reload the solution before rebuilding.
@@ -119,7 +119,7 @@ When accessing or removing protected registry entries, run RegScope as Administr
 
 ## Logging
 
-Application logs are stored in:
+Application logs are stored in a `Logs` directory next to the application when that location is writable. Otherwise, they are stored in:
 
 ```text
 %LOCALAPPDATA%\RegScope\Logs
@@ -128,10 +128,11 @@ Application logs are stored in:
 ## Project Structure
 
 ```text
-RegScope/                    WPF application
-RegScope.Application/        Application contracts and application layer
-RegScope.Domain/             Domain models and shared constants
-RegScope.Infrastructure/     Registry search and delete services
+RegScope/                    WPF application and view models
+RegScope.Services/           Registry search and delete services
+RegScope.Presentation/       UI styles, resources, and controls
+RegScope.Logger/             Application logging
+RegScope.Tests/              Automated tests
 RegScope.Installer/          WiX MSI installer project
 ```
 

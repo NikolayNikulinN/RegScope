@@ -13,6 +13,8 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of RegScope is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <UIRef Id="WixUI_Common" />
+    <UIRef Id="SingleButtonInstallUI" />
 
     <Icon Id="AppIcon.ico" SourceFile="$(var.ProjectDir)..\RegScope\appIcon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />

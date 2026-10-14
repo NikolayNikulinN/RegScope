@@ -1,0 +1,32 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <UI Id="SingleButtonInstallUI">
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="ExitDialog" />
+
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="12" Bold="yes" />
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+
+      <Dialog Id="InstallDlg" Width="370" Height="180" Title="[ProductName] Setup">
+        <Control Id="Title" Type="Text" X="20" Y="20" Width="330" Height="22" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}[ProductName]" />
+        <Control Id="Description" Type="Text" X="20" Y="55" Width="330" Height="35" Text="Install [ProductName] on this computer." />
+        <Control Id="InstallFolder" Type="Text" X="20" Y="95" Width="330" Height="25" Text="Destination: [INSTALLFOLDER]" />
+        <Control Id="Install" Type="PushButton" X="147" Y="135" Width="76" Height="24" Default="yes" Text="Install">
+          <Publish Event="EndDialog" Value="Return" />
+        </Control>
+      </Dialog>
+
+      <InstallUISequence>
+        <Show Dialog="InstallDlg" Before="ExecuteAction" Condition="NOT Installed" />
+      </InstallUISequence>
+    </UI>
+  </Fragment>
+</Wix>

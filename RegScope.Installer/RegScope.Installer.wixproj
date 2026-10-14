@@ -9,9 +9,10 @@
     <OutDir>$(MSBuildProjectDirectory)\$(OutputPath)</OutDir>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <SuppressValidation>true</SuppressValidation>
+    <InstallerProductVersion Condition="'$(InstallerProductVersion)' == ''">1.0.0</InstallerProductVersion>
     <RegScopePayloadDir>$(MSBuildProjectDirectory)\obj\RegScopePayload\$(Configuration)\$(OutputPlatform)\</RegScopePayloadDir>
     <RegScopePayloadIntermediateDir>obj\RegScopePayloadIntermediate\$(Configuration)\$(OutputPlatform)\</RegScopePayloadIntermediateDir>
-    <DefineConstants>RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
+    <DefineConstants>InstallerProductVersion=$(InstallerProductVersion);RegScopePayloadDir=$(RegScopePayloadDir);$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <Target Name="BuildRegScopePayload" BeforeTargets="CoreCompile">
@@ -20,5 +21,9 @@
         Targets="Build"
         Properties="Configuration=$(Configuration);Platform=$(Platform);OutDir=$(RegScopePayloadDir);IntermediateOutputPath=$(RegScopePayloadIntermediateDir)" />
   </Target>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+  </ItemGroup>
 
 </Project>

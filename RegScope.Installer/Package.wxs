@@ -1,9 +1,14 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+	<?define Manufacturer = "dLiX Software" ?>
+	<?define ProductName = "RegScope" ?>
+	<?define UpgradeCode = "FE874A48-D417-44A7-B90A-1B8AC58810E6" ?>
+	
   <Package
-      Name="RegScope"
-      Manufacturer="RegScope"
-      Version="1.0.0.0"
-      UpgradeCode="FE874A48-D417-44A7-B90A-1B8AC58810E6"
+      Name="$(var.ProductName)"
+      Manufacturer="$(var.Manufacturer)"
+      Version="$(var.InstallerProductVersion)"
+      UpgradeCode="$(var.UpgradeCode)"  
       Scope="perMachine">
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of RegScope is already installed." />
